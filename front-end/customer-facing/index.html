@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head land="en">
+    <link rel="stylesheet" href="css/styles.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="module" src="js/script.js"></script>
+    <script type="module" src="js/exports.js"></script>
+  </head>
+  <body>
+    <section id="chat-bot">
+      <section id="open-form">
+        <header>
+          <section id="chat-bot-drop-down">
+            <button id="chat-bot-extra" class="chat-bot-button"><img src="images/three-dots.png" width="20px" alt="three-dots"></button><br/>
+            <section id="chat-bot-drop-down-content">
+              <button id="live-chat-start">Talk to a live representative</button>
+            </section>
+          </section>
+          <p>Welcome to 24/7 Teach!</p>
+          <button id="chat-bot-close" class="chat-bot-button"><img src="images/dash.png" width="20px" alt="dash"></button>
+        </header>
+        <section id="chat-bot-form">
+          <p>Welcome to 24/7 live support. Our bot should be able to answer any questions you might have, but our customer support team is always available to help! Before we begin, please provide us with your email and name to better support you.</p><br/>
+          <form id="start-chat-submit" onsubmit="return false">
+            Name: <input id="name" name="name" type="text"><br/><br/>
+            Email: <input id="email" name="email" type="email"><br/><br/>
+            <button type="submit">Start the chat</button>
+          </form>
+        </section>
+        <section id="chat-bot-text">
+          <section id="messages">
+            <img src="images/twenty-four-seven-teach-logo.png" width="30px" alt="24/7-teach-logo">
+            <p>Hi, my name is Rebecca. How may I help you today?</p>
+          </section>
+          <form id="question-submit" onsubmit="return false">
+            <input id="question" name="question" type="text">
+            <button type="submit"><img src="images/send-icon.png" width="20px" alt="send-icon"></button>
+          </form>
+        </section>
+      </section>
+      <section id="closed-form">
+        <img src="images/chat-box.png" alt="chat-box" width="30px">
+      </section>
+    </section>
+  </body>
+</html>

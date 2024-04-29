@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head land="en">
+    <link rel="stylesheet" href="css/styles2.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script  defer src="js/script2.js"></script>
+    <script defer src="js/exports.js" type="module"></script>
+  </head>
+  <body>
+    <header id = "top-nav"></header></br>
+    <section id = "pending-chats">
+      <p> Pending Chats </p>
+      <div class = "chat">
+        <span class = "customer-name"> Customer Name </span>
+        <button class = "add-customer"><img src="images/three-dots.png" width="20px" alt="three-dots"></button>
+      </div></br>
+    </section>
+    <section id = "current-chats">
+        <div class = "customer">
+          <button class="chat-link" onclick="openPage('Customer1', this)"><span class = "customer-name">Customer1</span></button>
+          <button class ="close-chat"><img src="images/dash.png" width="20px" alt="dash"></button>
+        </div>
+    </section></br></br>
+    <section id = open-chats>
+      <section id="Customer1" class = "chat-content">
+        <header>
+          <p>Start with your chat with [Customer name]</p>
+        </header>
+        <section class="messages">
+          <p> Start your chat with the customer <p>
+        </section>
+        <form class="answer-submit" onsubmit="return false">
+          <input class="answer-submit-child" id="answer" name="answer" type="text">
+          <button class="answer-submit-child" type="submit"><img src="images/send-icon.png" width="20px" alt="send-icon"></button>
+        </form>
+      </section>
+    </section>
+    <section id="profile">
+
+    </section>
+  </body>
+</html>

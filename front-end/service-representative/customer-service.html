@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head land="en">
+    <link rel="stylesheet" href="css/styles-two.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script defer src="js/script-two.js" type="module"></script>
+    <script defer src="js/exports-service.js" type="module"></script>
+  </head>
+  <body>
+    <header id="top-nav"></header>
+    <section id="grid">
+      <section id="pending-chats" class="scrollbar">
+        <p>Pending Chats</p>
+        <div class="chat">
+          <span>Customer Name</span>
+          <button class="add-customer"><img src="images/three-dots.png" width="20px" alt="three-dots"></button>
+        </div>
+      </section>
+      <section>
+        <section id="current-chats" class="scrollbar">
+          <div class="customer">
+            <button class="chat-link">Customer1</button>
+            <button class="close-chat"><img src="images/dash.png" width="20px" alt="dash"></button>
+          </div>
+        </section>
+        <section id="open-chats">
+          <section class="chat-content">
+            <header>Customer Name</header>
+            <section class="messages">
+              <p>This is the start of your chat with ----.</p>
+              <section class="messages-grid scrollbar scurrent">
+              </section>
+            </section>
+          </section>
+          <form onsubmit="return false">
+            <input id="answer" name="answer" type="text">
+            <button type="submit"><img src="images/send-icon.png" width="20px" alt="send-icon"></button>
+          </form>
+        </section>
+      </section>
+      <section id="profile">
+        <p>Customer Profile</p>
+        <section class="customer-profile">
+          <p>Customer1</p>
+          <p>Customer1@gmail.com</p><br/>
+          <button>View Chat History</button>
+          <section class="chat-history scrollbar">
+            <button>Current Session</button>
+          </section>
+        </section>
+      </section>
+    </section>
+    <p id="notification">Notification</p>
+  </body>
+</html>

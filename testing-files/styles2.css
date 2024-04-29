@@ -1,0 +1,209 @@
+/* employee-widget.html */
+#closed-form {
+  position: fixed;
+  background-color: #CC745A;
+  bottom: 20px;
+  left: 20px;
+  width: 30px;
+  height: 30px;
+  padding: 10px;
+  border-style: solid;
+  border-color: #CC745A;
+  border-radius: 35px;
+}
+
+
+body{
+  font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  overflow-x: scroll;
+}
+
+#top-nav {
+  height: 47px;
+  width: 100vw;
+  background-color: #30455C ;
+  color: white;
+  display: flex;
+  margin: -0.5vw 0 0 -0.5vw;
+}
+
+  /* Customer sidebar */
+  #pending-chats {
+    margin: 0;
+    padding: 10px;
+    width: 250px;
+    background-color: #2D8990;
+    position: fixed;
+    height: 50%;
+    overflow-y: scroll;
+    display: inline-block;
+    z-index: 1;
+    left: 10px;
+    overflow-x: hidden;
+    padding-top: 10px;
+    color: #f1f1f1;
+    text-align: center;
+    border-radius: 8px;
+  }
+
+  .chat {
+    padding: 8px 8px 8px 8px;
+    font-size: 15px;
+    background-color : #818181;
+    text-align: left;
+    border-radius: 8px;
+  }
+
+  .chat span{
+    text-overflow: ellipsis;
+    padding: 8px 8px 8px 8px;
+  }
+
+  .chat:hover {
+    color: #f1f1f1;
+  }
+
+  .add-customer{
+    all: unset;
+    border-radius: 3px;
+    display: inline-flex;
+    float: right;
+  }
+
+  .add-customer:hover{
+    color: #f1f1f1;
+    cursor: pointer;
+  }
+
+  /*Customer chat navbar */
+  #current-chats{
+    margin-left: 20%;
+    width: 58%;
+    background-color: #2D8990;;
+    position: fixed;
+    padding: 10px 10px 5px 1px;
+    border-radius: 8px 8px 0px 0px;
+    overflow-x: scroll;
+    border-left: 0.5vw solid #2D8990;
+    border-right: 0.5vw solid #2D8990;
+  }
+
+  .customer.active {
+    background-color: white;
+  }
+
+  .customer{
+    background-color: #EAF0F3;
+    float: left;
+    width: 15%;
+    padding: 2px 1px 1px 1px;
+    border-radius: 3px;
+    margin-left: 10px;
+    margin-bottom: 0px;
+  }
+  
+  .chat-link{
+    padding: 1px 1px 1px 1px;
+    font-size: 15px;
+    margin-left: 3px;
+    text-overflow: clip; 
+    max-width: 60%;
+    background-color: #EAF0F3;
+    color: #30455C;
+    border: none;
+  }
+
+  .chat-link:hover{
+    cursor: pointer;
+  }
+
+  .customer-name{
+    text-overflow: clip; 
+    text-align: center;
+  }
+
+  .close-chat {
+    all: unset;
+    float: right;
+    margin-right: 10px;
+  }
+
+/*Actual Chat*/
+  #open-chats{
+    background-color: white;
+    height: 80%;
+    width: 58%;
+    margin-left: 20%;
+    border-radius: 0px 0px 8px 8px;
+    padding: 10px 10px 5px 0px;
+    font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    position: fixed;
+    border-left: 0.5vw solid #2D8990;
+    border-right: 0.57vw solid #2D8990;
+    border-bottom: 0.5vw solid #2D8990;
+}
+
+/* Header */
+#open-chats header * {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 20%;
+  }
+
+#open-chats header p {
+    width: 58%;
+    text-align: center;
+    color: black;
+    font-weight: 700;
+  }
+
+.chat-content{
+  border-radius: 8px;
+}
+
+.messages {
+  margin-left: 20px;
+  font-size: 14px;
+  background-color: white;
+  border-radius: 5px;
+  padding: 5px;
+  height: 305.5px;
+}
+.messages p {
+  margin-left: 10px;
+  font-size: 14px;
+}
+/* Form buttons */
+input, button[type="submit"] {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px;
+}
+button[type="submit"] {
+  background-color: #CC745A;
+  color: white;
+  font-weight: 700;
+  border-style: none;
+  border-radius: 5px;
+  font-size: 16px;
+  height: 39px;
+}
+button[type="submit"]:hover {
+  opacity: 80%;
+}
+
+/* Submitting Answers */
+.answer-submit {
+  position: absolute;
+  bottom: 15px;
+  width: 90%;
+  margin-left: 5px;
+  border-radius: px;
+}
+.answer-submit button[type="submit"] {
+  margin-left: 5px;
+  position: absolute;
+  width: 8%;
+  height: 31.5px;
+}
+

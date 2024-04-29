@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "http": "^0.0.1-security",
+    "mongodb": "^6.5.0",
+    "openai": "^4.38.5"
+  }
+}

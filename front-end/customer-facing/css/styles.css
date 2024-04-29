@@ -1,0 +1,153 @@
+/* Popup */
+#open-form {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background-color: lightgray;
+  height: 389px;
+  width: 300px;
+  border-radius: 10px;
+  border-style: solid;
+  border-color: black;
+  font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  display: none;
+}
+#closed-form {
+  position: fixed;
+  background-color: #CC745A;
+  bottom: 20px;
+  left: 20px;
+  width: 30px;
+  height: 30px;
+  padding: 10px;
+  border-style: solid;
+  border-color: #CC745A;
+  border-radius: 35px;
+}
+/* Header */
+#chat-bot header * {
+  display: inline-block;
+  vertical-align: middle;
+}
+#chat-bot header {
+  background-color: #CC745A;
+  border-radius: 8px;
+}
+#chat-bot header p {
+  width: 220px;
+  text-align: center;
+  color: white;
+  font-weight: 700;
+}
+.chat-bot-button {
+  all: unset;
+  border-radius: 3px;
+}
+.chat-bot-button:hover {
+  background-color: lightgray;
+  opacity: 20%;
+}
+#chat-bot-extra {
+  margin-left: 15px;
+  position: relative;
+  display: inline-block;
+}
+/* Form */
+#chat-bot-form, #chat-bot-text {
+  margin: 10px;
+  font-size: 14px;
+  background-color: white;
+  border-radius: 5px;
+  padding: 5px;
+  height: 305.5px;
+}
+#chat-bot-text {
+  display: none;
+}
+#chat-bot-form p {
+  margin: 0;
+  font-size: 14px;
+}
+/* Form buttons */
+input, button[type="submit"] {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px;
+}
+button[type="submit"] {
+  background-color: #CC745A;
+  color: white;
+  font-weight: 700;
+  border-style: none;
+  border-radius: 5px;
+  font-size: 16px;
+  height: 39px;
+}
+button[type="submit"]:hover {
+  opacity: 80%;
+}
+/* Actual chat-bot */
+#chat-bot-text {
+  display: none;
+}
+#messages {
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: min-content;
+  gap: 5px;
+  overflow-y: scroll;
+  max-height: 269px;
+}
+#messages p {
+  margin: 0;
+  padding: 5px;
+  border-style: solid;
+  border-radius: 5px;
+  background-color: rgb(240, 238, 238)
+}
+/* Fancy Scrollbar */
+#messages::-webkit-scrollbar {
+  width: 5px;
+}
+#messages::-webkit-scrollbar-track {
+  background: white;
+}
+#messages::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 2.5px;
+}
+#messages::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+/* Submitting Questions */
+#question-submit {
+  position: absolute;
+  bottom: 15px;
+  width: 230px;
+}
+#question-submit button[type="submit"] {
+  position: absolute;
+  width: 40px;
+  height: 31.5px;
+}
+/* Drop Down */
+#chat-bot-drop-down-content {
+  display: none;
+  position: absolute;
+  z-index: 1;
+  margin-top: 10px;
+  width: 100%;
+}
+#chat-bot-drop-down-content * {
+  all: unset;
+  background-color: #EAF0F3;
+  font-size: 14px;
+  margin: 0;
+  padding: 5px;
+  font-weight: 400;
+  width: 100%;
+  box-sizing: border-box;
+}
+#chat-bot-drop-down-content button:hover {
+  background-color: #c7cccf;
+}

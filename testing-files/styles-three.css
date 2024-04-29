@@ -1,0 +1,84 @@
+body {
+    font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    margin: 0;
+  }
+  #top-nav {
+    height: 47px;
+    width: 100%;
+    background-color: #30455C ;
+    color: white;
+    display: flex;
+  }
+
+#customer-service-login {
+    position: fixed;
+    border-style: solid;
+    width: 35%;
+    height: 50%;
+    margin-left: 30%;
+    margin-top: 10%;
+    border-radius: 20px;
+    padding: 30px;
+    border: 0.5vw solid #2D8990;
+}
+
+#customer-service-login h1{
+    margin-left: 5%;
+    font-size: 35px;
+    margin-bottom: 10px;
+}
+
+#customer-service-login p{
+    margin-left: 5%;
+    color: #63697A;
+    margin-bottom: 20px;
+}
+
+#representative-login {
+    margin: auto;
+    margin-left: 5%;
+    font-weight: bold;
+}
+
+input[type=text]{
+    width: 80%;
+    margin-top: 2%;
+    height: 30px;
+    border: none;
+    border-bottom: 2px solid #555;
+    font-weight: normal;
+    padding-left: 10px;
+    padding-right: 10px;
+    overflow-x: hidden;
+}
+
+
+input[type=password]{
+    width: 80%;
+    margin-top: 2%;
+    height: 30px;
+    border: none;
+    border-bottom: 2px solid #555;
+    font-weight: normal;
+    padding-left: 10px;
+    padding-right: 10px;
+    overflow-x: hidden;
+}
+
+#service-representative-login{
+    font-size: 15px;
+    width: 90%;
+    margin-top: 5%;
+    text-align: center;
+    padding: 10px;
+    font-weight: bold;
+    background-color: #07C4C8;
+    border-radius: 10px;
+    border-color: #07C4C8;
+    color: white;
+}
+
+#notification {
+    display: none;
+    /* temporary */
+}

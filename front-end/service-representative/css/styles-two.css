@@ -1,0 +1,239 @@
+/* employee-widget.html */
+#closed-form {
+  position: fixed;
+  background-color: #CC745A;
+  bottom: 20px;
+  left: 20px;
+  width: 30px;
+  height: 30px;
+  padding: 10px;
+  border-style: solid;
+  border-color: #CC745A;
+  border-radius: 35px;
+}
+body {
+  font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  margin: 0;
+}
+#top-nav {
+  height: 47px;
+  width: 100%;
+  background-color: #30455C ;
+  color: white;
+  display: flex;
+}
+/* Overall formatting */
+#grid {
+  margin-top: 1vw;
+  display: grid;
+  grid-template-columns: 20vw 60vw 20vw;
+}
+/* Customer sidebar */
+#pending-chats {
+  margin-left: 1vw;
+  padding: 1vh 1vw 1vh 1vw;
+  width: 16vw;
+  background-color: #2D8990;
+  height: 88vh;
+  overflow-y: auto;
+  color: #f1f1f1;
+  text-align: center;
+  border-radius: 8px;
+}
+.chat {
+  padding: 8px;
+  font-size: 15px;
+  background-color : #818181;
+  text-align: left;
+  border-radius: 8px;
+  display: none;
+}
+.add-customer {
+  all: unset;
+  border-radius: 3px;
+  float: right;
+}
+/*Customer chat navbar */
+#current-chats {
+  background-color: #2D8990;
+  box-sizing: border-box;
+  border-radius: 8px 8px 0px 0px;
+  overflow-x: auto;
+  height: 4.5vh;
+  border-left: 0.5vw solid #2D8990;
+  border-right: 0.5vw solid #2D8990;
+  width: 59vw;
+}
+.customer {
+  margin-top: 0.5vh;
+  margin-right: 0.5vw;
+  background-color: #EAF0F3;
+  width: fit-content;
+  height: 20px;
+  border-radius: 3px;
+  display: none;
+  padding: 2px;
+}
+.chat-link {
+  all: unset;
+  font-size: 15px;
+  width: fit-content;
+  padding: 0 10px 0 0;
+  background-color: #EAF0F3;
+  color: #30455C;
+}
+.chat-link:hover {
+  cursor: pointer;
+}
+.close-chat {
+  all: unset;
+  float: right;
+  height: 20px;
+}
+/*Actual Chat*/
+#open-chats {
+  box-sizing: border-box;
+  background-color: white;
+  height: 85.5vh;
+  width: 59vw;
+  border-radius: 0px 0px 8px 8px;
+  font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  border-left: 0.5vw solid #2D8990;
+  border-right: 0.5vw solid #2D8990;
+  border-bottom: 0.5vw solid #2D8990;
+}
+/* Header */
+.chat-content header * {
+  display: inline-block;
+  vertical-align: middle;
+}
+.chat-content header {
+  text-align: center;
+  color: black;
+  font-weight: 700;
+}
+.chat-content {
+  border-radius: 8px;
+  display: none;
+}
+.messages {
+  font-size: 14px;
+  background-color: white;
+}
+.messages p {
+  padding: 5px;
+  margin: 0;
+  font-size: 14px;
+}
+.messages-grid {
+  display: grid;
+  grid-template-columns: 30px auto;
+  grid-template-rows: min-content;
+  gap: 5px;
+  max-height: 73vh;
+  overflow-y: auto;
+  margin: 0.5vh 0.5vw 0.5vh 0.5vw
+}
+#current-chats button:hover {
+  opacity: 50%;
+}
+/* Form buttons */
+input, button[type="submit"] {
+  position: absolute;
+  top: 92.8vh;
+  width: 54vw;
+  left: 20.6vw;
+  box-sizing: border-box;
+  padding: 6px;
+  height: 30px;
+}
+button[type="submit"] {
+  background-color: #CC745A;
+  color: white;
+  font-weight: 700;
+  border-style: none;
+  border-radius: 5px;
+  font-size: 16px;
+  width: 3.8vw;
+  left: 74.6vw;
+}
+button[type="submit"]:hover {
+  opacity: 80%;
+}
+/* Profle */
+#profile {
+  box-sizing: border-box;
+  padding: 1vh 1vw 1vh 1vw;
+  width: 19vw;
+  margin: 0;
+  background-color: #2D8990;
+  height: 90vh;
+  display: inline-block;
+  color: #f1f1f1;
+  text-align: center;
+  border-radius: 8px;
+}
+.customer-profile {
+  display: none;
+  margin: 0;
+  width: 17vw;
+  box-sizing: border-box;
+  color: #f1f1f1;
+  border-radius: 8px;
+}
+.customer-profile p {
+  text-align: left;
+  margin: 0;
+  overflow-wrap: break-word;
+}
+.customer-profile button {
+  all: unset;
+  background-color: #CC745A;
+  color: black;
+  border-radius: 8px;
+  padding: 0.5vw;
+}
+.customer-profile button:hover {
+  opacity: 80%;
+}
+.chat-history {
+  overflow-y: auto;
+  display: none;
+  max-height: 64vh;
+  margin-top: 2vh;
+  border-radius: 8px;
+}
+.chat-history button {
+  background-color: #f1f1f1;
+  border-radius: 0px;
+  padding: 0;
+  width: 100%;
+}
+/* Fancy Scrollbar */
+.scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.scrollbar::-webkit-scrollbar-track {
+  background: #30455C;
+  border-radius: 2.5px;
+}
+.scrollbar::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 2.5px;
+}
+.scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+/* Notification */
+#notification {
+  display: none;
+  position: absolute;
+  right: 1.4vw;
+  bottom: 1vh;
+  z-index: 1;
+  background-color: #A7B1C2;
+  width: fit-content;
+  border: 0.5vw solid #A7B1C2;
+  border-radius: 0.5vw;
+}
