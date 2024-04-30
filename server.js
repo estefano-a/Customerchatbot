@@ -73,7 +73,7 @@ async function addMessage(name, message, recipient) {
 }
 
 http.createServer(function (req, res) {
-  let body = ''
+  const body = ''
   req.on('data', chunk => {
     body += chunk.toString()
   })
@@ -181,5 +181,5 @@ http.createServer(function (req, res) {
     res.end()
   })
 }).listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+  console.log(`Chatbot listening on port ${port}`)
 })
