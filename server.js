@@ -1,7 +1,7 @@
 const http = require('http');
 const {MongoClient} = require('mongodb');
 const OpenAI = require("openai");
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 10000;
 
 var unreadMessages = []
 
