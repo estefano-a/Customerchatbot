@@ -180,4 +180,6 @@ http.createServer(function (req, res) {
     }
     res.end()
   })
-}).listen(port)
+}).listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
+})
