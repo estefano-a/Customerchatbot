@@ -61,7 +61,7 @@ function updateMessages(response, name) {
 
 function sendMessage(str, name) {
   const message = new XMLHttpRequest();
-  message.open("POST", "http://localhost:8080")
+  message.open("POST", "https://customerchatbot.onrender.com")
   const object = {request: "message", name: "customerRep", message: str, recipient: name}
   message.send(JSON.stringify(object))
 }
@@ -71,7 +71,7 @@ function requestUpdate() {
   message.onload = function() {
     updatePage(JSON.parse(this.responseText))
   }
-  message.open("POST", "http://localhost:8080")
+  message.open("POST", "https://customerchatbot.onrender.com")
   const object = {request: "reloadUsers"}
   message.send(JSON.stringify(object))
 }
@@ -81,7 +81,7 @@ function requestMessageUpdate(name) {
   message.onload = function() {
     updateMessages(JSON.parse(this.responseText), name);
   }
-  message.open("POST", "http://localhost:8080");
+  message.open("POST", "https://customerchatbot.onrender.com");
   const object = {request: "reloadMessages",  name: "customerRep", recipient: name}
   message.send(JSON.stringify(object))
 }
@@ -128,7 +128,7 @@ function requestMessagesAtTime(session, name) {
     document.querySelector(`.user-${name.replace(" ", "-")} .messages`).append(section);
     openSession(session, name)
   }
-  message.open("POST", "http://localhost:8080");
+  message.open("POST", "https://customerchatbot.onrender.com");
   const object = {request: "getMessagesDuringSession", name: name, session: session}
   message.send(JSON.stringify(object))
 }
@@ -144,7 +144,7 @@ function requestMessageHistory(name, node) {
       node.append(button);
     }
   }
-  message.open("POST", "http://localhost:8080");
+  message.open("POST", "https://customerchatbot.onrender.com");
   const object = {request: "getSession", name: name}
   message.send(JSON.stringify(object))
 }
@@ -172,11 +172,11 @@ function getCurrentSession(name) {
         document.querySelector(`.user-${name.replace(" ", "-")} .messages .scurrent`).append(img, textBox)
       }
     }
-    otherMessage.open("POST", "http://localhost:8080");
+    otherMessage.open("POST", "https://customerchatbot.onrender.com");
     const objectTwo = {request: "getMessagesDuringSession", name: name, session: currentSession}
     otherMessage.send(JSON.stringify(objectTwo))
   }
-  message.open("POST", "http://localhost:8080");
+  message.open("POST", "https://customerchatbot.onrender.com");
   const object = {request: "getSession", name: name}
   message.send(JSON.stringify(object))
 }
