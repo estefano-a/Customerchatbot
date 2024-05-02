@@ -12,14 +12,14 @@ function callChatBot(str) {
     box.style.height = "min-content";
     document.querySelector("#messages").append(box)
   }
-  message.open("POST", "https://customerchatbot.onrender.com");
+  message.open("POST", "https://customerchatbot.onrender.comdirectConnection=true");
   const object = {request: "callChatBot", name: globalName, message: str}
   message.send(JSON.stringify(object));
 }
 
 function callLiveRepresentative(str) {
   const message = new XMLHttpRequest();
-  message.open("POST", "https://customerchatbot.onrender.com");
+  message.open("POST", "https://customerchatbot.onrender.comdirectConnection=true");
   const object = {request: "message", name: globalName, message: str, recipient: "customerRep"}
   message.send(JSON.stringify(object));
 }
@@ -27,14 +27,14 @@ function callLiveRepresentative(str) {
 function sendUserInfo(name, email) {
   globalName = name;
   const message = new XMLHttpRequest();
-  message.open("POST", "https://customerchatbot.onrender.com");
+  message.open("POST", "https://customerchatbot.onrender.comdirectConnection=true");
   const object = {request: "addUser", name: globalName, email: email} 
   message.send(JSON.stringify(object));
 }
 
 function addToLiveChat() {
   const message = new XMLHttpRequest()
-  message.open("POST", "https://customerchatbot.onrender.com")
+  message.open("POST", "https://customerchatbot.onrender.comdirectConnection=true")
   const object = {request: "addUserToLiveChat", name: globalName}
   message.send(JSON.stringify(object))
 }
@@ -54,14 +54,14 @@ function requestResponse() {
       document.querySelector("#messages").append(image, paragraph);
     })
   }
-  message.open("POST", "https://customerchatbot.onrender.com");
+  message.open("POST", "https://customerchatbot.onrender.comdirectConnection=true");
   const object = {request: "reloadMessages", name: globalName, recipient: "customerRep"}
   message.send(JSON.stringify(object));
 }
 
 function closeWindow() {
   const message = new XMLHttpRequest();
-  message.open("POST", "https://customerchatbot.onrender.com");
+  message.open("POST", "https://customerchatbot.onrender.comdirectConnection=true");
   const object = {request: "removeUser", name: globalName}
   message.send(JSON.stringify(object));
 }
