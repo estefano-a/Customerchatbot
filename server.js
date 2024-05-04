@@ -78,7 +78,7 @@ http.createServer(function (req, res) {
     body += chunk.toString()
   })
   req.on('end', async () => {
-    body = JSON.parse(body)
+    body = JSON.parse(body);
     res.writeHead(
       200,
       {'Content-Type': 'text/html'},
