@@ -90,7 +90,7 @@ http.createServer(function (req, res) {
         return;
       }
       res.setHeader(
-        'Access-Control-Allow-Origin', "*"
+        'Access-Control-Allow-Origin', '*'
       )
     switch (body.request) {
       case "addUser":
