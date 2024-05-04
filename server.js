@@ -89,7 +89,7 @@ http.createServer(function (req, res) {
         res.end(JSON.stringify({error: "Invalid JSON"}));
         return;
       }
-      res.setHead(
+      res.setHeader(
         'Access-Control-Allow-Origin', "*"
       )
     switch (body.request) {
