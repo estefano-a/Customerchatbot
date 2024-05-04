@@ -89,11 +89,15 @@ http.createServer(function (req, res) {
         res.end(JSON.stringify({error: "Invalid JSON"}));
         return;
       }
-    res.setHead(
-      200,
-      {'Content-Type': 'text/html'},
-      {"Access-Control-Allow-Origin": "http://localhost:5500"},
-    )
+      const allowedOrigins = ['http://localhost:5500', 'http://127.0.0.1:5500'];
+      const origin = req.headers.origin;
+      if (allowedOrigins.includes(origin)) {
+        res.setHead(
+          200,
+          {'Content-Type': 'text/html'},
+          {"Access-Control-Allow-Origin": origin},
+        )
+      }
     switch (body.request) {
       case "addUser":
         addNameAndEmail(body.name, body.email);
