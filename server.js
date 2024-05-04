@@ -89,7 +89,7 @@ http.createServer(function (req, res) {
         res.end(JSON.stringify({error: "Invalid JSON"}));
         return;
       }
-      const allowedOrigins = ['http://localhost:5500', 'http://127.0.0.1:5500'];
+      const allowedOrigins = ['http://localhost:5500', 'http://127.0.0.1:5500', '*'];
       const origin = req.headers.origin;
       if (allowedOrigins.includes(origin)) {
         res.setHead(
