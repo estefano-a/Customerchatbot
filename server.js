@@ -82,7 +82,7 @@ http.createServer(function (req, res) {
     res.writeHead(
       200,
       {'Content-Type': 'text/html'},
-      {"Access-Control-Allow-Origin": "localhost:5500"},
+      {"Access-Control-Allow-Origin": "*"},
     )
     switch (body.request) {
       case "addUser":
