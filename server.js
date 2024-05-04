@@ -76,10 +76,10 @@ http.createServer(function (req, res) {
   let body = ""
   req.on('data', chunk => {
     body += chunk.toString()
-    console.log(body)
   })
   req.on('end', async () => {
     body = JSON.parse(body)
+    console.log(body)
     res.writeHead(
       200,
       {'Content-Type': 'text/html'},
