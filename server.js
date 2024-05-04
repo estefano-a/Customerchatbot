@@ -74,11 +74,21 @@ async function addMessage(name, message, recipient) {
 
 http.createServer(function (req, res) {
   let body = ""
-  req.on('data', chunk => {
-    body += chunk.toString()
-  })
-  req.on('end', async () => {
-    body = JSON.parse(body)
+   req.on('data', chunk => {
+      console.log('Received chunk: ', chunk.toString());
+      body += chunk.toString();
+    });
+    req.on('end', async () => {
+      console.log('Final body string: ', body);
+      try {
+        body = JSON.parse(body);
+        // existing switch block here
+      } catch (error) {
+        console.error('Parsing error:', error);
+        res.writeHead(400, {'Content-Type': 'application/json'});
+        res.end(JSON.stringify({error: "Invalid JSON"}));
+        return;
+      }
     res.writeHead(
       200,
       {'Content-Type': 'text/html'},
