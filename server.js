@@ -89,7 +89,7 @@ http.createServer(function (req, res) {
         res.end(JSON.stringify({error: "Invalid JSON"}));
         return;
       }
-    res.writeHead(
+    res.setHead(
       200,
       {'Content-Type': 'text/html'},
       {"Access-Control-Allow-Origin": "http://localhost:5500"},
