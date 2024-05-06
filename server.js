@@ -73,9 +73,6 @@ async function addMessage(name, message, recipient) {
 }
 
 http.createServer(function (req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   let body = ""
    req.on('data', chunk => {
       console.log('Received chunk: ', chunk.toString());
@@ -85,112 +82,112 @@ http.createServer(function (req, res) {
       console.log('Final body string: ', body);
       try {
         body = JSON.parse(body);
-        // existing switch block here
-      } catch (error) {
-        console.error('Parsing error:', error);
-        res.writeHead(400, {'Content-Type': 'application/json'});
-        res.end(JSON.stringify({error: "Invalid JSON"}));
-        return;
-      }
-    try{
-      switch (body.request) {
-        case "addUser":
-          addNameAndEmail(body.name, body.email);
-          break;
-        case "message":
-          if (body.message == "A customer service representative has taken your call") {
-            updateStatus(body.recipient, "taken")
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+        
+        switch (body.request) {
+          case "addUser":
+            addNameAndEmail(body.name, body.email);
+            break;
+          case "message":
+            if (body.message == "A customer service representative has taken your call") {
+              updateStatus(body.recipient, "taken")
+            }
+            await addMessage(body.name, body.message, body.recipient);
+            break
+          case "getSession":
+            session = await obtainSession(body.name)
+            res.write(session.toString())
+            break
+          case "callChatBot":
+            await addMessage(body.name, body.message, 'chat-bot')
+            response = await callChatBot(body.message)
+            await addMessage('chat-bot', response, body.name)
+            res.write(response)
+            break
+          case "reloadUsers":
+            let updatedPage = [[], [], []]
+            response = await client.db(chatDatabase).collection(namesAndEmailsCollection).find({
+              "sessionStatus": "live"
+            }).toArray()
+            response.forEach(function(x) {
+              updatedPage[0].push([x.username, x.userEmail])
+              setTimeout(function() {
+                updateStatus(x.username, "default")
+              }, 990)
+            })
+            response = await client.db(chatDatabase).collection(namesAndEmailsCollection).find({
+              "sessionStatus": "taken"
+            }).toArray()
+            response.forEach(function(x) {
+              updatedPage[1].push(x.username)
+              setTimeout(function() {
+                updateStatus(x.username, "default")
+              }, 4000)
+            })
+            response = await client.db(chatDatabase).collection(namesAndEmailsCollection).find({
+              "sessionStatus": "closed"
+            }).toArray()
+            response.forEach(function(x) {
+              updatedPage[2].push(x.username)
+              setTimeout(function() {
+                updateStatus(x.username, "default")
+              }, 990)
+            })
+            res.write(JSON.stringify(updatedPage));
+            break;
+          case "reloadMessages":
+            let updatedMessages = [];
+            unreadMessages.forEach((i) => {
+              if (i[0] == body.recipient && i[2] == body.name) {
+                updatedMessages.push(i[1])
+                unreadMessages.splice(unreadMessages.indexOf(i), 1)
+              }
+            })
+            res.write(JSON.stringify(updatedMessages))
+            break;
+          case "addUserToLiveChat":
+            updateStatus(body.name, "live")
+            break;
+          case "removeUser":
+            client.db(chatDatabase).collection(namesAndEmailsCollection).findOneAndUpdate({
+                "username": body.name
+              }, {
+                $inc: {"sessionNumber": 1},
+                $set: {"sessionStatus": "closed"}
+              }
+            )
+            unreadMessages.forEach((i) => {
+              if (i[0] == body.name || i[2] == body.name) {
+                unreadMessages.splice(unreadMessages.indexOf(i), 1)
+              }
+            })
+            break
+          case "getMessagesDuringSession":
+            let sessionMessages = []
+            response = await client.db(chatDatabase).collection(messagesCollection).find({
+              "session": parseInt(body.session),
+              $or: [{"sender": body.name}, {"reciever": body.name}]
+            }).toArray()
+            response.forEach(function(x) {
+              if (x.sender == "customerRep" || x.sender == "chat-bot") {
+                sessionMessages.push(`from247|${x.messageSent}`)
+              } else {
+                sessionMessages.push(x.messageSent)
+              }
+            })
           }
-          await addMessage(body.name, body.message, body.recipient);
-          break
-        case "getSession":
-          session = await obtainSession(body.name)
-          res.write(session.toString())
-          break
-        case "callChatBot":
-          await addMessage(body.name, body.message, 'chat-bot')
-          response = await callChatBot(body.message)
-          await addMessage('chat-bot', response, body.name)
-          res.write(response)
-          break
-        case "reloadUsers":
-          let updatedPage = [[], [], []]
-          response = await client.db(chatDatabase).collection(namesAndEmailsCollection).find({
-            "sessionStatus": "live"
-          }).toArray()
-          response.forEach(function(x) {
-            updatedPage[0].push([x.username, x.userEmail])
-            setTimeout(function() {
-              updateStatus(x.username, "default")
-            }, 990)
-          })
-          response = await client.db(chatDatabase).collection(namesAndEmailsCollection).find({
-            "sessionStatus": "taken"
-          }).toArray()
-          response.forEach(function(x) {
-            updatedPage[1].push(x.username)
-            setTimeout(function() {
-              updateStatus(x.username, "default")
-            }, 4000)
-          })
-          response = await client.db(chatDatabase).collection(namesAndEmailsCollection).find({
-            "sessionStatus": "closed"
-          }).toArray()
-          response.forEach(function(x) {
-            updatedPage[2].push(x.username)
-            setTimeout(function() {
-              updateStatus(x.username, "default")
-            }, 990)
-          })
-          res.write(JSON.stringify(updatedPage));
-          break;
-        case "reloadMessages":
-          let updatedMessages = [];
-          unreadMessages.forEach((i) => {
-            if (i[0] == body.recipient && i[2] == body.name) {
-              updatedMessages.push(i[1])
-              unreadMessages.splice(unreadMessages.indexOf(i), 1)
-            }
-          })
-          res.write(JSON.stringify(updatedMessages))
-          break;
-        case "addUserToLiveChat":
-          updateStatus(body.name, "live")
-          break;
-        case "removeUser":
-          client.db(chatDatabase).collection(namesAndEmailsCollection).findOneAndUpdate({
-              "username": body.name
-            }, {
-              $inc: {"sessionNumber": 1},
-              $set: {"sessionStatus": "closed"}
-            }
-          )
-          unreadMessages.forEach((i) => {
-            if (i[0] == body.name || i[2] == body.name) {
-              unreadMessages.splice(unreadMessages.indexOf(i), 1)
-            }
-          })
-          break
-        case "getMessagesDuringSession":
-          let sessionMessages = []
-          response = await client.db(chatDatabase).collection(messagesCollection).find({
-            "session": parseInt(body.session),
-            $or: [{"sender": body.name}, {"reciever": body.name}]
-          }).toArray()
-          response.forEach(function(x) {
-            if (x.sender == "customerRep" || x.sender == "chat-bot") {
-              sessionMessages.push(`from247|${x.messageSent}`)
-            } else {
-              sessionMessages.push(x.messageSent)
-            }
-          })
-        }
-        res.writeHead(200, {'Content-Type': 'text/html'});
-        res.end();
-      } catch (err) {
-          res.writeHead(500, {'Content-Type': 'application/json'});
-          res.end(JSON.stringify({ error: err.message }));
-        }
+          res.writeHead(200, {'Content-Type': 'text/html'});
+          res.end();
+        }  
+      catch (err) {
+          console.error('Error handling request:', error);
+          if (!res.headersSent) {
+            res.writeHead(500, {'Content-Type': 'application/json'});
+          }
+          res.end(JSON.stringify({ error: "Internal Server Error" }));
+      }
   });
 }).listen(port, () => {
   console.log(`Chatbot listening on port ${port}`);
