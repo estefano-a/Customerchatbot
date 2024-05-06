@@ -186,7 +186,7 @@ http.createServer(function (req, res) {
           })
         }
         res.writeHead(200, {'Content-Type': 'text/html'});
-        res.end("<html><body><h1>Response</h1></body></html>");
+        res.end();
       } catch (err) {
           res.writeHead(500, {'Content-Type': 'application/json'});
           res.end(JSON.stringify({ error: err.message }));
