@@ -181,7 +181,7 @@ http.createServer(function (req, res) {
           res.writeHead(200, {'Content-Type': 'text/html'});
           res.end();
         }  
-      catch (err) {
+      catch (error) {
           console.error('Error handling request:', error);
           if (!res.headersSent) {
             res.writeHead(500, {'Content-Type': 'application/json'});
