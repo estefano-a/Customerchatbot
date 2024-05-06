@@ -75,11 +75,11 @@ async function addMessage(name, message, recipient) {
 http.createServer(function (req, res) {
   let body = ""
    req.on('data', chunk => {
-      console.log('Received chunk: ', chunk.toString());
+      //console.log('Received chunk: ', chunk.toString());
       body += chunk.toString();
     });
     req.on('end', async () => {
-      console.log('Final body string: ', body);
+      //console.log('Final body string: ', body);
       try {
         body = JSON.parse(body);
         res.writeHead(200, {
