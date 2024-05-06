@@ -172,6 +172,7 @@ http.createServer(function (req, res) {
               "session": parseInt(body.session),
               $or: [{"sender": body.name}, {"reciever": body.name}]
             }).toArray()
+            console.log(response)
             response.forEach(function(x) {
               if (x.sender == "customerRep" || x.sender == "chat-bot") {
                 sessionMessages.push(`from247|${x.messageSent}`)
