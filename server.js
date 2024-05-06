@@ -189,6 +189,7 @@ http.createServer(function (req, res) {
       } else {
         res.end();
       }
+    }
   });
 }).listen(port, () => {
   console.log(`Chatbot listening on port ${port}`);
