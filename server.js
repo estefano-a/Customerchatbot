@@ -82,10 +82,12 @@ http.createServer(function (req, res) {
       console.log('Final body string: ', body);
       try {
         body = JSON.parse(body);
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-        
+        res.writeHead(200, {
+        'Content-Type': 'text/html', 
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      });
         switch (body.request) {
           case "addUser":
             addNameAndEmail(body.name, body.email);
@@ -178,7 +180,6 @@ http.createServer(function (req, res) {
               }
             })
           }
-          res.writeHead(200, {'Content-Type': 'text/html'});
           res.end();
         }  
       catch (error) {
