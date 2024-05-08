@@ -110,9 +110,8 @@ function requestMessagesAtTime(session, name) {
     section.classList.remove("current")
     section.classList.add(`s${session}`)
     if(this.responseText.startsWith('[')){
-      this.responseText = this.responseText.slice(1, this.indexOf(']'));
+          console.log("Starts with [");
     }
-    console.log(this.responseText);
     if (this.responseText && this.responseText.trim().startsWith('{')) {
       try {
         const messages = JSON.parse(this.responseText);
