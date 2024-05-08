@@ -110,7 +110,7 @@ function requestMessagesAtTime(session, name) {
     section.classList.remove("current")
     section.classList.add(`s${session}`)
     if(this.responseText.trim().startsWith('[')){
-          console.log("Starts with [");
+          console.error("error", this.responseText);
     }
     else{
       console.log(this.responseText.trim().slice(0, 4));
