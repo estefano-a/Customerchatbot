@@ -109,25 +109,33 @@ function requestMessagesAtTime(session, name) {
     section.innerHTML = "";
     section.classList.remove("current")
     section.classList.add(`s${session}`)
-    const messages = JSON.parse(this.responseText)
-    for (let i in messages) {
-      const img = document.createElement("img");
-      if (messages[i].slice(0, 8) == "from247|") {
-        img.src = "images/twenty-four-seven-teach-logo.png";
-        img.alt = "twenty-four-seven-teach-logo"
-        messages[i] = messages[i].slice(8)
+    if (this.responseText && this.responseText.trim().startsWith('{')) {
+      try {
+        const messages = JSON.parse(this.responseText);
+        for (let i in messages) {
+          const img = document.createElement("img");
+          if (messages[i].slice(0, 8) == "from247|") {
+            img.src = "images/twenty-four-seven-teach-logo.png";
+            img.alt = "twenty-four-seven-teach-logo"
+            messages[i] = messages[i].slice(8)
+          } else {
+            img.src = "images/user-icon.png";
+            img.alt = "user-icon"
+          }
+          img.style.width = "30px"
+          const textBox = document.querySelector(`.user-${name.replace(" ", "-")} .messages`).children[0].cloneNode();
+          textBox.innerText = messages[i];
+          section.append(img, textBox)
+        }
+        document.querySelector(`.user-${name.replace(" ", "-")} .messages`).append(section);
+        openSession(session, name)
+      } catch (e) {
+          console.error("Failed to parse JSON response:", e, this.responseText);
+        }
       } else {
-        img.src = "images/user-icon.png";
-        img.alt = "user-icon"
+        console.error("Invalid or empty response received:", this.responseText);
       }
-      img.style.width = "30px"
-      const textBox = document.querySelector(`.user-${name.replace(" ", "-")} .messages`).children[0].cloneNode();
-      textBox.innerText = messages[i];
-      section.append(img, textBox)
     }
-    document.querySelector(`.user-${name.replace(" ", "-")} .messages`).append(section);
-    openSession(session, name)
-  }
   message.open("POST", "https://customerchatbot.onrender.com");
   const object = {request: "getMessagesDuringSession", name: name, session: session}
   message.send(JSON.stringify(object))
