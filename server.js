@@ -1,11 +1,12 @@
 const http = require('http');
 const {MongoClient} = require('mongodb');
 const OpenAI = require("openai");
+require('dotenv').config()
 const port = process.env.PORT || 10000;
 
 var unreadMessages = []
 
-const uri = "mongodb+srv://circlespace:NMUp4QxJCh9vcmy0@chatbot-widget.tkmifse.mongodb.net/?retryWrites=true&w=majority&appName=chatbot-widget";
+const uri = process.env.MONGOD_CONNECT_URI;
 const client = new MongoClient(uri);
 const chatDatabase = "chatdb";
 const namesAndEmailsCollection = "namesAndEmails";
