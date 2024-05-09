@@ -109,6 +109,7 @@ function requestMessagesAtTime(session, name) {
     section.innerHTML = "";
     section.classList.remove("current")
     section.classList.add(`s${session}`)
+    console.log(JSON.parse(this.responseText));
     console.log("Received response:", this.responseText);
     if (this.responseText && this.responseText.trim().startsWith('{')) {
       try {
