@@ -180,6 +180,8 @@ http.createServer(function (req, res) {
                 sessionMessages.push(x.messageSent)
               }
             })
+            res.write(JSON.stringify(sessionMessages))
+            break
           }
           res.end();
         }  
