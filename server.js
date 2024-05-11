@@ -15,7 +15,7 @@ client.connect();
 
 async function callChatBot(str) {
   const completion = await openai.chat.completions.create({
-  apiKey: process.env.OPENAI_API_KEY,
+  Authorization: Bearer process.env.OPENAI_API_KEY,
   messages: [{role: "system", content: str}],
   model: "gpt-3.5-turbo",
   });
