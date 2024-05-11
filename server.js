@@ -2,7 +2,7 @@ const http = require('http');
 const {MongoClient} = require('mongodb');
 require('dotenv').config();
 const {OpenAI} = require("openai");
-const openai = new OpenAI();
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const port = process.env.PORT || 10000;
 
 var unreadMessages = []
@@ -17,8 +17,8 @@ client.connect();
 async function callChatBot(str) {
   try {
     const completion = await OpenAI.chat.completions.create({
+      messages: [{role: "system", content: str}],
       model: "gpt-3.5-turbo",
-      prompt: [{role: "system", content: str}],
     });
     return completion.choices[0].message.content;
   } catch (error) {
