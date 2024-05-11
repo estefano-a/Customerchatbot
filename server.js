@@ -1,8 +1,9 @@
 const http = require('http');
 const {MongoClient} = require('mongodb');
-const OpenAI = require("openai");
+const { Configuration, OpenAIApi } = require("openai");
+const configuration = new Configuration({ apiKey: process.env.OPENAI_API_KEY,});
+const openai = new OpenAIApi(configuration);
 require('dotenv').config()
-console.log(process.env.OPENAI_API_KEY);
 const port = process.env.PORT || 10000;
 
 var unreadMessages = []
