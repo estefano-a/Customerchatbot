@@ -17,12 +17,11 @@ client.connect();
 
 async function callChatBot(str) {
   try {
-    const completion = await openai.chat.createCompletion({
+    const completion = await openai.chat.Completions.create({
       model: "gpt-3.5-turbo",
-      prompt: str,
-      max_tokens: 150,
+      prompt: [{role: "system", content: str}],
     });
-    return completion.choices[0].message.content.trim();
+    return completion.choices[0].message.content;
   } catch (error) {
     console.error('Failed to call chatbot:', error);
     return null;
