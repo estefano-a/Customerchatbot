@@ -16,7 +16,7 @@ const messagesCollection = "messages";
 client.connect();
 
 async function callChatBot(str) {
-  const completion = await OpenAI.chat.completions.create({
+  const completion = await openai.chat.completions.create({
   messages: [{role: "system", content: str}],
   model: "gpt-3.5-turbo",
   });
