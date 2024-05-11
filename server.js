@@ -1,16 +1,9 @@
 const http = require('http');
 const {MongoClient} = require('mongodb');
 require('dotenv').config();
-const { Configuration, OpenAIApi } = require("openai");
-
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-const openai = new OpenAIApi(configuration);
+const OpenAI = require("openai");
+OpenAI.apiKey = process.env.OPENAI_API_KEY;
 console.log(Object.keys(OpenAI));
-if (OpenAI.Chat) {
-  console.log("Available methods under 'chat':", Object.keys(OpenAI.Chat));
-}
 const port = process.env.PORT || 10000;
 
 var unreadMessages = []
@@ -24,7 +17,7 @@ client.connect();
 
 async function callChatBot(str) {
   try {
-    const completion = await OpenAI.chat.completions.create({
+    const completion = await OpenAI.chat.completions({
       model: "gpt-3.5-turbo",
       prompt: [{role: "system", content: str}],
     });
