@@ -1,8 +1,6 @@
 const http = require('http');
 const {MongoClient} = require('mongodb');
-const { Configuration, OpenAIApi } = require("openai");
-const configuration = new Configuration({ apiKey: process.env.OPENAI_API_KEY,});
-const openai = new OpenAIApi(configuration);
+const openai = require("openai");
 require('dotenv').config()
 const port = process.env.PORT || 10000;
 
@@ -17,6 +15,7 @@ client.connect();
 
 async function callChatBot(str) {
   const completion = await openai.chat.completions.create({
+  apiKey: process.env.OPENAI_API_KEY,
   messages: [{role: "system", content: str}],
   model: "gpt-3.5-turbo",
   });
