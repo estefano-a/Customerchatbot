@@ -15,11 +15,16 @@ const messagesCollection = "messages";
 client.connect();
 
 async function callChatBot(str) {
-  const completion = await openai.chat.completions.create({
-  messages: [{role: "system", content: str}],
-  model: "gpt-3.5-turbo",
-  });
-  return completion.choices[0].message.content
+  try {
+    const completion = await openai.chat.create({
+      model: "gpt-3.5-turbo",
+      messages: [{role: "system", content: str}]
+    });
+    return completion.choices[0].message.content;
+  } catch (error) {
+    console.error('Failed to call chatbot:', error);
+    return null;
+  }
 }
 
 function currentTime() {
