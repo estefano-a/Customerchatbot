@@ -4,6 +4,9 @@ require('dotenv').config();
 const OpenAI = require("openai");
 OpenAI.apiKey = process.env.OPENAI_API_KEY;
 console.log(Object.keys(OpenAI));
+if (openai.chat) {
+  console.log("Available methods under 'chat':", Object.keys(openai.chat));
+}
 const port = process.env.PORT || 10000;
 
 var unreadMessages = []
@@ -17,7 +20,7 @@ client.connect();
 
 async function callChatBot(str) {
   try {
-    const completion = await OpenAI.Chat.Completions.create({
+    const completion = await OpenAI.chat.completions.create({
       model: "gpt-3.5-turbo",
       prompt: [{role: "system", content: str}],
     });
