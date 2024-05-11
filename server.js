@@ -1,8 +1,12 @@
 const http = require('http');
 const {MongoClient} = require('mongodb');
 require('dotenv').config();
-const OpenAI = require("openai");
-OpenAI.apiKey = process.env.OPENAI_API_KEY;
+const { Configuration, OpenAIApi } = require("openai");
+
+const configuration = new Configuration({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+const openai = new OpenAIApi(configuration);
 console.log(Object.keys(OpenAI));
 if (OpenAI.Chat) {
   console.log("Available methods under 'chat':", Object.keys(OpenAI.Chat));
