@@ -4,8 +4,8 @@ require('dotenv').config();
 const OpenAI = require("openai");
 OpenAI.apiKey = process.env.OPENAI_API_KEY;
 console.log(Object.keys(OpenAI));
-if (OpenAI.chat) {
-  console.log("Available methods under 'chat':", Object.keys(openai.chat));
+if (OpenAI.Chat) {
+  console.log("Available methods under 'chat':", Object.keys(OpenAI.Chat));
 }
 const port = process.env.PORT || 10000;
 
