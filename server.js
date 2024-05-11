@@ -1,3 +1,5 @@
+from openai import OpenAI
+
 const http = require('http');
 const {MongoClient} = require('mongodb');
 require('dotenv').config();
