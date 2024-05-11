@@ -14,12 +14,11 @@ const messagesCollection = "messages";
 client.connect();
 
 async function callChatBot(str) {
-  // const completion = await openai.chat.completions.create({
-  //   messages: [{role: "system", content: str}],
-  //   model: "gpt-3.5-turbo",
-  // });
-  // return completion.choices[0].message.content
-  return "This works"
+  const completion = await openai.chat.completions.create({
+  messages: [{role: "system", content: str}],
+  model: "gpt-3.5-turbo",
+  });
+  return completion.choices[0].message.content
 }
 
 function currentTime() {
