@@ -32,7 +32,11 @@ async function obtainSession(name) {
   const result = await client.db(chatDatabase).collection(namesAndEmailsCollection).findOne({
     "username": name
   })
-  return(parseInt(result.sessionNumber))
+  if (!result) {
+    console.error("No user found with the username:", name);
+    return null;  // or handle the absence of the user appropriately
+  }
+  return parseInt(result.sessionNumber);
 }
 
 function updateStatus(name, status) {
