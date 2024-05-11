@@ -3,10 +3,6 @@ const http = require('http');
 const {MongoClient} = require('mongodb');
 const {OpenAI} = require("openai");
 const openai = new OpenAI({apiKey: process.env['OPENAI_API_KEY'],});
-console.log("OpenAI structure:", Object.keys(OpenAI));
-if (OpenAI.chat) {
-  console.log("Chat features:", Object.keys(OpenAI.chat));
-}
 const port = process.env.PORT || 10000;
 
 var unreadMessages = []
@@ -118,7 +114,6 @@ http.createServer(function (req, res) {
             break
           case "callChatBot":
             await addMessage(body.name, body.message, 'chat-bot')
-            console.log(body.message)
             response = await callChatBot(body.message)
             await addMessage('chat-bot', response, body.name)
             res.write(response)
