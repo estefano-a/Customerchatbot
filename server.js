@@ -114,6 +114,7 @@ http.createServer(function (req, res) {
             break
           case "callChatBot":
             await addMessage(body.name, body.message, 'chat-bot')
+            console.log(body.message)
             response = await callChatBot(body.message)
             await addMessage('chat-bot', response, body.name)
             res.write(response)
