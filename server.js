@@ -1,9 +1,7 @@
-from openai import OpenAI
-
 const http = require('http');
 const {MongoClient} = require('mongodb');
 require('dotenv').config();
-const {OpenAI} = require("openai");
+const OpenAI = require("openai");
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const port = process.env.PORT || 10000;
 
