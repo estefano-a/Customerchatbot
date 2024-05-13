@@ -2,7 +2,6 @@ import {sendMessage, requestUpdate, requestMessageUpdate, requestMessageHistory,
 
 var inFocusPerson = "";
 var currentPeople = [];
-localStorage.setItem("Current", currentPeople);
 
 function closeOtherChats() {
   document.querySelectorAll(".chat-content, .customer-profile").forEach(function(elem) {
