@@ -131,8 +131,6 @@ window.onload = function() {
       document.querySelector("#messages").append(image, message);
     }
   }
-  var chatHistory = document.getElementById("messages");
-  chatHistory.scrollTop = chatHistory.scrollHeight;
   updateForCookies();
 };
 
