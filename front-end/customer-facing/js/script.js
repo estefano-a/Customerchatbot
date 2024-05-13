@@ -81,6 +81,7 @@ window.onload = function() {
     firstImage.style.width = "30px"
     const form = document.querySelector("#messages");
     const question = document.querySelector("#question-submit").elements[0].value;
+    question += "\n";
     newTextBox.textContent = question;
     newTextBox.style.height = "min-content";
     const secondImage = document.createElement("img");
