@@ -16,16 +16,16 @@ const messagesCollection = "messages";
 client.connect();
 
 const schemaFile = "chatgptSchema.txt";
-const websiteScrub = "output.json";
+//const websiteScrub = "output.json";
 const systemSchema = fs.readFileSync(schemaFile, "utf8");
-const websiteData = JSON.parse(fs.readFileSync(websiteScrub, "utf8"));
+//const websiteData = JSON.parse(fs.readFileSync(websiteScrub, "utf8"));
 
 async function callChatBot(str) {
   try {
     const completion = await openai.chat.completions.create({
       messages: [
         {role: "system", content: systemSchema},
-        {role: "system", content: websiteData},
+        //{role: "system", content: websiteData},
         {role: "user", content: str}
       ],
       model: "gpt-3.5-turbo",
