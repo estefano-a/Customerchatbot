@@ -18,7 +18,7 @@ client.connect();
 const schemaFile = "chatgptSchema.txt";
 const websiteScrub = "output.json";
 const systemSchema = fs.readFileSync(schemaFile, "utf8");
-const websiteData = JSON.parse(fs.readFileSync(websiteScrub, "utf8")).toArray();
+const websiteData = JSON.parse(fs.readFileSync(websiteScrub, "utf8"));
 
 async function callChatBot(str) {
   try {
