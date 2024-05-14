@@ -2,6 +2,7 @@ require('dotenv').config();
 const http = require('http');
 const {MongoClient} = require('mongodb');
 const {OpenAI} = require("openai");
+const fs = require('fs');
 const openai = new OpenAI({apiKey: process.env['OPENAI_API_KEY'],});
 const port = process.env.PORT || 10000;
 
@@ -14,12 +15,22 @@ const namesAndEmailsCollection = "namesAndEmails";
 const messagesCollection = "messages";
 client.connect();
 
+const schemaFile = "chatgptSchema.txt";
+const websiteScrub = "output.json";
+const systemSchema = fs.readFileSync(schemaFile, "utf8");
+const websiteData = fs.readFileSync(websiteScrub, "utf8");
+
 async function callChatBot(str) {
   try {
     const completion = await openai.chat.completions.create({
-      messages: [{role: "system", content: str}],
+      messages: [
+        {role: "system", content: systemSchema},
+        {role: "system", content: websiteData},
+        {role: "user", content: str}
+      ],
       model: "gpt-3.5-turbo",
     });
+    console.log(completion.choices[0].message.content)
     return completion.choices[0].message.content;
   } catch (error) {
     console.error('Failed to call chatbot:', error);
