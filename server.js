@@ -20,28 +20,23 @@ const websiteScrub = "output.json";
 const systemSchema = fs.readFileSync(schemaFile);
 // const websiteData = JSON.parse(websiteScrub);
 
-async function createAssistant(){
-  const file = await openai.files.create({
+async function callChatBot(str) {
+  try {
+    const file = await openai.files.create({
       file: fs.createReadStream(websiteScrub),
       purpose: "assistants", 
     });
 
-  const assistant = await openai.beta.assistants.create({
-        name: "Rebecca",
-        description: "You are 24/7 Teach's named Rebecca. Your job as the company website's AI Customer Chatbot is to provide answers to various questions from users on the website",
-        instructions: systemSchema,
-        tools: [{ type: "file_search" }],
-        tool_resources: {
-          "file_search": {"file_ids": [file.id]}
-        },
-        model: "gpt-3.5-turbo"
-      });
-}
-
-await createAssistant();
-
-async function callChatBot(str) {
-  try {
+    const assistant = await openai.beta.assistants.create({
+          name: "Rebecca",
+          description: "You are 24/7 Teach's named Rebecca. Your job as the company website's AI Customer Chatbot is to provide answers to various questions from users on the website",
+          instructions: systemSchema,
+          tools: [{ type: "file_search" }],
+          tool_resources: {
+            "file_search": {"file_ids": [file.id]}
+          },
+          model: "gpt-3.5-turbo"
+        });
     const thread = await openai.beta.threads.create();
     const message = await openai.beta.threads.messages.create(
       thread.id,
