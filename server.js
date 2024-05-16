@@ -59,7 +59,7 @@ async function callChatBot(str) {
       );
       for (const message of messages.data.reverse()) {
         console.log(`${message.role} > ${message.content[0].text.value}`);
-        return message.content[0].text.value;
+        return JSON.parse(message.content[0].text.value);
       }
     } else {
       console.log(run.status);
