@@ -20,60 +20,55 @@ const websiteScrub = "output.json";
 const systemSchema = fs.readFileSync(schemaFile);
 // const websiteData = JSON.parse(websiteScrub);
 
-const assistant = await openai.beta.assistants.create({
-      name: "Rebecca",
-      description: "You are 24/7 Teach's named Rebecca. Your job as the company website's AI Customer Chatbot is to provide answers to various questions from users on the website",
-      instructions: systemSchema,
-      tools: [{ type: "file_search" }],
-      model: "gpt-3.5-turbo"
+async function createAssistant(){
+  const file = await openai.files.create({
+      file: fs.createReadStream(websiteScrub),
+      purpose: "assistants", 
     });
 
-const fileStreams = [websiteScrub].map((path) =>
-  fs.createReadStream(path),
-);
-// Create a vector store for the data on 24/7 Teach's website
-let vectorStore = await openai.beta.vectorStores.create({
-  name: "24/7 Teach Website Data",
-});
-await openai.beta.vectorStores.fileBatches.uploadAndPoll(vectorStore.id, fileStreams)
-await openai.beta.assistants.update(assistant.id, {
-  tool_resources: { file_search: { vector_store_ids: [vectorStore.id] } },
-});
+  const assistant = await openai.beta.assistants.create({
+        name: "Rebecca",
+        description: "You are 24/7 Teach's named Rebecca. Your job as the company website's AI Customer Chatbot is to provide answers to various questions from users on the website",
+        instructions: systemSchema,
+        tools: [{ type: "file_search" }],
+        tool_resources: {
+          "file_search": {"file_ids": [file.id]}
+        },
+        model: "gpt-3.5-turbo"
+      });
+}
 
-const file = await openai.files.create({
-  file: fs.createReadStream(websiteScrub),
-  purpose: "assistants", 
-});
+await createAssistant();
 
 async function callChatBot(str) {
   try {
-    const stream = openai.beta.threads.runs
-  .stream(thread.id, {
-    assistant_id: assistant.id,
-  })
-  .on("textCreated", () => console.log("assistant >"))
-  .on("toolCallCreated", (event) => console.log("assistant " + event.type))
-  .on("messageDone", async (event) => {
-    if (event.content[0].type === "text") {
-      const { text } = event.content[0];
-      const { annotations } = text;
-      const citations = [];
-
-      let index = 0;
-      for (let annotation of annotations) {
-        text.value = text.value.replace(annotation.text, "[" + index + "]");
-        const { file_citation } = annotation;
-        if (file_citation) {
-          const citedFile = await openai.files.retrieve(file_citation.file_id);
-          citations.push("[" + index + "]" + citedFile.filename);
-        }
-        index++;
+    const thread = await openai.beta.threads.create();
+    const message = await openai.beta.threads.messages.create(
+      thread.id,
+      {
+        role: "user",
+        content: str
       }
+    );
 
-      console.log(text.value);
-      console.log(citations.join("\n"));
+    let run = await openai.beta.threads.runs.createAndPoll(
+      thread.id,
+      { 
+        assistant_id: assistant.id,
+        instructions: "Please address the user as Jane Doe. The user has a premium account."
+      }
+    );
+    if (run.status === 'completed') {
+      const messages = await openai.beta.threads.messages.list(
+        run.thread_id
+      );
+      for (const message of messages.data.reverse()) {
+        console.log(`${message.role} > ${message.content[0].text.value}`);
+        return message.content[0].text.value;
+      }
+    } else {
+      console.log(run.status);
     }
-  })
     // const completion = await openai.chat.completions.create({
     //   messages: [
     //     {role: "system", content: systemSchema},
@@ -83,7 +78,6 @@ async function callChatBot(str) {
     //   model: "gpt-3.5-turbo",
     // });
     // return completion.choices[0].message.content;
-    return text.value;
   } catch (error) {
     console.error('Failed to call chatbot:', error);
     return "";
