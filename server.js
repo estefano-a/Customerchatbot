@@ -16,21 +16,74 @@ const messagesCollection = "messages";
 client.connect();
 
 const schemaFile = "chatgptSchema.txt";
-//const websiteScrub = "output.json";
-const systemSchema = fs.readFileSync(schemaFile, "utf8");
-//const websiteData = JSON.parse(fs.readFileSync(websiteScrub, "utf8"));
+const websiteScrub = "output.json";
+const systemSchema = fs.readFileSync(schemaFile);
+// const websiteData = JSON.parse(websiteScrub);
+
+const assistant = await openai.beta.assistants.create({
+      name: "Rebecca",
+      description: "You are 24/7 Teach's named Rebecca. Your job as the company website's AI Customer Chatbot is to provide answers to various questions from users on the website",
+      instructions: systemSchema,
+      tools: [{ type: "file_search" }],
+      model: "gpt-3.5-turbo"
+    });
+
+const fileStreams = [websiteScrub].map((path) =>
+  fs.createReadStream(path),
+);
+// Create a vector store for the data on 24/7 Teach's website
+let vectorStore = await openai.beta.vectorStores.create({
+  name: "24/7 Teach Website Data",
+});
+await openai.beta.vectorStores.fileBatches.uploadAndPoll(vectorStore.id, fileStreams)
+await openai.beta.assistants.update(assistant.id, {
+  tool_resources: { file_search: { vector_store_ids: [vectorStore.id] } },
+});
+
+const file = await openai.files.create({
+  file: fs.createReadStream(websiteScrub),
+  purpose: "assistants", 
+});
 
 async function callChatBot(str) {
   try {
-    const completion = await openai.chat.completions.create({
-      messages: [
-        {role: "system", content: systemSchema},
-        //{role: "system", content: websiteData},
-        {role: "user", content: str}
-      ],
-      model: "gpt-3.5-turbo",
-    });
-    return completion.choices[0].message.content;
+    const stream = openai.beta.threads.runs
+  .stream(thread.id, {
+    assistant_id: assistant.id,
+  })
+  .on("textCreated", () => console.log("assistant >"))
+  .on("toolCallCreated", (event) => console.log("assistant " + event.type))
+  .on("messageDone", async (event) => {
+    if (event.content[0].type === "text") {
+      const { text } = event.content[0];
+      const { annotations } = text;
+      const citations = [];
+
+      let index = 0;
+      for (let annotation of annotations) {
+        text.value = text.value.replace(annotation.text, "[" + index + "]");
+        const { file_citation } = annotation;
+        if (file_citation) {
+          const citedFile = await openai.files.retrieve(file_citation.file_id);
+          citations.push("[" + index + "]" + citedFile.filename);
+        }
+        index++;
+      }
+
+      console.log(text.value);
+      console.log(citations.join("\n"));
+    }
+  })
+    // const completion = await openai.chat.completions.create({
+    //   messages: [
+    //     {role: "system", content: systemSchema},
+    //     //{role: "system", content: websiteData},
+    //     {role: "user", content: str + ' ' + websiteData}
+    //   ],
+    //   model: "gpt-3.5-turbo",
+    // });
+    // return completion.choices[0].message.content;
+    return text.value;
   } catch (error) {
     console.error('Failed to call chatbot:', error);
     return "";
