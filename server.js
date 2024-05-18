@@ -18,42 +18,67 @@ client.connect();
 
 //reading files
 const schemaFile = "chatgptSchema.txt";
-const websiteScrub = "output.json";
 const systemSchema = fs.readFileSync(schemaFile, "utf-8");
-const websiteFile = createFile(websiteScrub);
 
-//creating openai assistant
-const customerAssistant = createAssistant();
+// async function createFile(fileName) {
+//   try {
+//     const file = await openai.files.create({
+//       file: fs.createReadStream(fileName),
+//       purpose: "assistants" 
+//     });
+//     return file;
+//   } catch (error) {
+//     console.error(error);
+//   }
+// }
 
-async function createFile(fileName) {
+// async function createAssistant(){
+//   websiteFile = await createFile(websiteScrub);
+//   const assistant = await openai.beta.assistants.create({
+//     name: "Rebecca",
+//     description: "You are 24/7 Teach's named Rebecca. Your job as the company website's AI Customer Chatbot is to provide answers to various questions from users on the website",
+//     instructions: systemSchema,
+//     tools: [{ type: "file_search" }],
+//     tool_resources: {
+//       "file_search": {"file_ids": [websiteFile.id]}
+//     },
+//     model: "gpt-3.5-turbo"
+//   });
+//   return assistant;
+// }
+
+async function callChatBot(user, str) {
   try {
-    const file = await openai.files.create({
-      file: fs.createReadStream(fileName),
-      purpose: "assistants" 
-    });
-    return file;
-  } catch (error) {
-    console.error(error);
-  }
-}
+    const myAssistant = await openai.beta.assistants.retrieve(
+      process.env.OPENAI_ASSISTANT_ID
+    );
+    console.log(myAssistant);
 
-async function createAssistant(){
-  const assistant = await openai.beta.assistants.create({
-    name: "Rebecca",
-    description: "You are 24/7 Teach's named Rebecca. Your job as the company website's AI Customer Chatbot is to provide answers to various questions from users on the website",
-    instructions: systemSchema,
-    tools: [{ type: "file_search" }],
-    tool_resources: {
-      "file_search": {"file_ids": [websiteFile.id]}
-    },
-    model: "gpt-3.5-turbo"
-  });
-  console.log(assistant);
-  return assistant;
-}
-
-async function callChatBot(str) {
-  try {
+    const message = await openai.beta.threads.messages.create(
+      await obtainThread(user),
+      {
+        role: "user",
+        content: str,
+      }
+    );
+    let run = await openai.beta.threads.runs.createAndPoll(
+      thread.id,
+      { 
+        assistant_id: myAssistant.id,
+        instructions: systemSchema
+      }
+    );
+    if (run.status === 'completed') {
+      const messages = await openai.beta.threads.messages.list(
+        run.thread_id
+      );
+      for (const message of messages.data.reverse()) {
+        console.log(`${message.role} > ${message.content[0].text.value}`);
+        return message.content[0].text.value;
+      }
+    } else {
+      console.log(run.status);
+    }
     // const completion = await openai.chat.completions.create({
     //   messages: [
     //     {role: "system", content: systemSchema},
@@ -63,7 +88,6 @@ async function callChatBot(str) {
     //   model: "gpt-3.5-turbo",
     // });
     // return completion.choices[0].message.content;
-    return "This works";
   } catch (error) {
     console.error('Failed to call chatbot:', error);
     return "";
@@ -86,6 +110,17 @@ async function obtainSession(name) {
   return parseInt(result.sessionNumber);
 }
 
+async function obtainThread(name) {
+  const result = await client.db(chatDatabase).collection(namesAndEmailsCollection).findOne({
+    "username": name
+  })
+  if (!result) {
+    console.error("No user found with the username:", name);
+    return null;  // or handle the absence of the user appropriately
+  }
+  return result.threadId;
+}
+
 function updateStatus(name, status) {
   client.db(chatDatabase).collection(namesAndEmailsCollection).findOneAndUpdate({
       "username": name
@@ -93,12 +128,14 @@ function updateStatus(name, status) {
   )
 }
 
-function addNameAndEmail(name, email) {
+async function addNameAndEmail(name, email) {
+  const newThread = await openai.beta.threads.create().id;
   client.db(chatDatabase).collection(namesAndEmailsCollection).insertOne({
     username: name,
     userEmail: email,
     sessionNumber: 1,
-    sessionStatus: "default"
+    sessionStatus: "default",
+    threadId: newThread.id
   })
 }
 
@@ -157,7 +194,7 @@ http.createServer(function (req, res) {
             break
           case "callChatBot":
             await addMessage(body.name, body.message, 'chat-bot')
-            response = await callChatBot(body.message)
+            response = await callChatBot(body.name, body.message)
             await addMessage('chat-bot', response, body.name)
             res.write(response)
             break
