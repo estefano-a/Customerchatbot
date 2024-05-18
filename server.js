@@ -19,7 +19,7 @@ client.connect();
 //reading files
 const schemaFile = "chatgptSchema.txt";
 const websiteScrub = "output.json";
-const systemSchema = fs.readFileSync(schemaFile);
+const systemSchema = fs.readFileSync(schemaFile, "utf-8");
 const websiteFile = createFile(websiteScrub);
 
 //creating openai assistant
