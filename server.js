@@ -44,9 +44,9 @@ async function createAssistant(){
     description: "You are 24/7 Teach's named Rebecca. Your job as the company website's AI Customer Chatbot is to provide answers to various questions from users on the website",
     instructions: systemSchema,
     tools: [{ type: "file_search" }],
-    tool_resources: {
-      "file_search": {"file_ids": [websiteFile.id]}
-    },
+    // tool_resources: {
+    //   "file_search": {"file_ids": [websiteFile.id]}
+    // },
     model: "gpt-3.5-turbo"
   });
   return assistant;
@@ -54,33 +54,6 @@ async function createAssistant(){
 
 async function callChatBot(str) {
   try {
-    const thread = await openai.beta.threads.create();
-    const message = await openai.beta.threads.messages.create(
-      thread.id,
-      {
-        role: "user",
-        content: str
-      }
-    );
-
-    let run = await openai.beta.threads.runs.createAndPoll(
-      thread.id,
-      { 
-        assistant_id: assistant.id,
-        instructions: "Please address the user as Jane Doe. The user has a premium account."
-      }
-    );
-    if (run.status === 'completed') {
-      const messages = await openai.beta.threads.messages.list(
-        run.thread_id
-      );
-      for (const message of messages.data.reverse()) {
-        console.log(`${message.role} > ${message.content[0].text.value}`);
-        return JSON.parse(message.content[0].text.value);
-      }
-    } else {
-      console.log(run.status);
-    }
     // const completion = await openai.chat.completions.create({
     //   messages: [
     //     {role: "system", content: systemSchema},
@@ -90,6 +63,7 @@ async function callChatBot(str) {
     //   model: "gpt-3.5-turbo",
     // });
     // return completion.choices[0].message.content;
+    return "This works";
   } catch (error) {
     console.error('Failed to call chatbot:', error);
     return "";
