@@ -24,13 +24,12 @@ const websiteFile = createFile(websiteScrub);
 
 //creating openai assistant
 const customerAssistant = createAssistant();
-console.log(customerAssistant);
 
 async function createFile(fileName) {
   try {
     const file = await openai.files.create({
       file: fs.createReadStream(fileName),
-      purpose: "assistants", 
+      purpose: "assistants" 
     });
     return file;
   } catch (error) {
@@ -44,11 +43,12 @@ async function createAssistant(){
     description: "You are 24/7 Teach's named Rebecca. Your job as the company website's AI Customer Chatbot is to provide answers to various questions from users on the website",
     instructions: systemSchema,
     tools: [{ type: "file_search" }],
-    // tool_resources: {
-    //   "file_search": {"file_ids": [websiteFile.id]}
-    // },
+    tool_resources: {
+      "file_search": {"file_ids": [websiteFile.id]}
+    },
     model: "gpt-3.5-turbo"
   });
+  console.log(assistant);
   return assistant;
 }
 
