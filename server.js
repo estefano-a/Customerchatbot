@@ -8,6 +8,7 @@ const port = process.env.PORT || 10000;
 
 var unreadMessages = []
 
+//MongoDB constants
 const uri = process.env.MONGOD_CONNECT_URI;
 const client = new MongoClient(uri);
 const chatDatabase = "chatdb";
@@ -15,29 +16,41 @@ const namesAndEmailsCollection = "namesAndEmails";
 const messagesCollection = "messages";
 client.connect();
 
+//reading files
 const schemaFile = "chatgptSchema.txt";
 const websiteScrub = "output.json";
 const systemSchema = fs.readFileSync(schemaFile);
-// const websiteData = JSON.parse(websiteScrub);
-
-const file = await openai.files.create({
-  file: fs.createReadStream(websiteScrub),
-  purpose: "assistants", 
-});
+const websiteFile = createFile(websiteScrub);
 
 //creating openai assistant
-const assistant = await openai.beta.assistants.create({
-  name: "Rebecca",
-  description: "You are 24/7 Teach's named Rebecca. Your job as the company website's AI Customer Chatbot is to provide answers to various questions from users on the website",
-  instructions: systemSchema,
-  tools: [{ type: "file_search" }],
-  tool_resources: {
-    "file_search": {"file_ids": [file.id]}
-  },
-  model: "gpt-3.5-turbo"
-});
+const customerAssistant = createAssistant();
+console.log(customerAssistant);
 
-console.log(assistant);
+async function createFile(fileName) {
+  try {
+    const file = await openai.files.create({
+      file: fs.createReadStream(fileName),
+      purpose: "assistants", 
+    });
+    return file;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function createAssistant(){
+  const assistant = await openai.beta.assistants.create({
+    name: "Rebecca",
+    description: "You are 24/7 Teach's named Rebecca. Your job as the company website's AI Customer Chatbot is to provide answers to various questions from users on the website",
+    instructions: systemSchema,
+    tools: [{ type: "file_search" }],
+    tool_resources: {
+      "file_search": {"file_ids": [websiteFile.id]}
+    },
+    model: "gpt-3.5-turbo"
+  });
+  return assistant;
+}
 
 async function callChatBot(str) {
   try {
