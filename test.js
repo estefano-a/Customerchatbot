@@ -5,93 +5,42 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 async function main() {
     try {
-        const myAssistant = await retryWithExponentialBackoff(async () => {
-            return await openai.beta.assistants.retrieve(
-                process.env.OPENAI_ASSISTANT_ID
+        const run = await openai.beta.threads.createAndRun({
+            assistant_id: process.env.OPENAI_ASSISTANT_ID,
+            thread: {
+              messages: [
+                { role: "user", content: "Can you tell me about the company 24/7 Teach?" },
+              ],
+            },
+          });
+
+        console.log("run status: ", run.status);
+
+        while(
+            await openai.beta.threads.runs.retrieve(
+                run.thread_id,
+                run.id
+              ).status != 'failed'
+        ){
+            const result = await openai.beta.threads.runs.retrieve(
+                run.thread_id,
+                run.id
             );
-        });
+            console.log("Status of run is:" , result.status);
 
-        const thread = await retryWithExponentialBackoff(async () => {
-            return await openai.beta.threads.create();
-        });
+            if(result.status == 'completed'){
+                const threadMessages = await openai.beta.threads.messages.list(
+                    run.thread_id
+                  );
 
-        const message = await retryWithExponentialBackoff(async () => {
-            return await openai.beta.threads.messages.create(
-                thread.id,
-                {
-                    role: "user",
-                    content: "Hello how are you?",
-                }
-            );
-        });
-
-        const run = await retryWithExponentialBackoff(async () => {
-            return await openai.beta.threads.runs.createAndPoll(
-                thread.id,
-                { 
-                    assistant_id: myAssistant.id,
-                    instructions: "You are a friend to the user"
-                }
-            );
-        });
-
-        console.log(run);
-
-        // if (run.status === 'completed') {
-        //     const messages = await retryWithExponentialBackoff(async () => {
-        //         return await openai.beta.threads.messages.list(
-        //             run.thread_id
-        //         );
-        //     });
-        //     for (const message of messages.data.reverse()) {
-        //         console.log(`${message.role} > ${message.content[0].text.value}`);
-        //     }
-        // } else {
-        //     console.error('Run failed with status:', run);
-        // }
+                console.log(threadMessages.data[0].content[0].text.value)
+                return threadMessages.data[0].content[0].text.value;
+            }
+        }
     } catch (error) {
         console.error('An error occurred:', error);
+        return "";
     }
 }
-
-async function retryWithExponentialBackoff(fn, retries = 5, delay = 1000) {
-    try {
-        return await fn();
-    } catch (error) {
-        if (retries <= 0 || (error.status !== 429 && error.code !== 'rate_limit_exceeded')) {
-            throw error;
-        }
-        console.warn(`Rate limit exceeded. Retrying in ${delay}ms... (${retries} retries left)`);
-        await new Promise(resolve => setTimeout(resolve, delay));
-        return retryWithExponentialBackoff(fn, retries - 1, delay * 2);
-    }
-}
-
-
-// async function updateAssistant(){
-//     const myUpdatedAssistant = await openai.beta.assistants.update(
-//         process.env.OPENAI_ASSISTANT_ID,
-//         {
-//           model: "gpt-3.5-turbo-0125"
-//         });
-
-//         const myAssistant = await openai.beta.assistants.retrieve(
-//             process.env.OPENAI_ASSISTANT_ID
-//           );
-
-//         console.log(myAssistant);
-// }
 
 main();
-
-// async function test(){
-//     const completion = await openai.chat.completions.create({
-//         messages: [{ role: "system", content: "You are a helpful assistant." }],
-//         model: "gpt-3.5-turbo-16k",
-//         max_tokens: 300
-//       });
-    
-//       console.log(completion.choices[0]);
-// }
-
-// test();
