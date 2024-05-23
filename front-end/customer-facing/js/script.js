@@ -29,7 +29,7 @@ function updateForCookies() {
     document.querySelector("#chat-bot-form").remove();
     document.querySelector("#chat-bot-text").style.display = "block";
     const image = document.createElement("img");
-    image.src = "images/twenty-four-seven-teach-logo.png";
+    image.src = "images/orangelogo.png";
     image.alt = "24/7-teach-logo";
     image.style.height = "30px";
     const newTextBox = document.createElement("p");
@@ -84,7 +84,7 @@ window.onload = function() {
     newTextBox.textContent = question;
     newTextBox.style.height = "min-content";
     const secondImage = document.createElement("img");
-    secondImage.src = "images/twenty-four-seven-teach-logo.png";
+    secondImage.src = "images/orangelogo.png";
     secondImage.alt = "24/7-teach-logo";
     secondImage.style.height = "30px";
     form.append(firstImage, newTextBox);
@@ -121,7 +121,7 @@ window.onload = function() {
       requestResponse();
       setInterval(requestResponse, 1000);
       const image = document.createElement("img");
-      image.src = "images/twenty-four-seven-teach-logo.png";
+      image.src = "images/orangelogo.png";
       image.alt = "24/7-teach-logo";
       image.style.height = "30px";
       const message = document.createElement("p");
@@ -137,3 +137,5 @@ window.onload = function() {
 window.onbeforeunload = function() {
   closeWindow();
 }
+
+document.cookie = "name=YourName; path=/";

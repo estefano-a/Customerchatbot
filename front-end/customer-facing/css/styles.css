@@ -3,12 +3,9 @@
   position: fixed;
   bottom: 20px;
   left: 20px;
-  background-color: lightgray;
-  height: 389px;
+  background-color: #EAF0F3;
+  height: 390px;
   width: 300px;
-  border-radius: 10px;
-  border-style: solid;
-  border-color: black;
   font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   display: none;
 }
@@ -30,15 +27,39 @@
   vertical-align: middle;
 }
 #chat-bot header {
-  background-color: #CC745A;
-  border-radius: 8px;
+  background-color: #30455C;
+  display: inline-flex;
+  flex: auto;
+  height: 25%;
 }
-#chat-bot header p {
-  width: 220px;
+#header-logo {
+  object-fit: contain;
+  border:  solid #CC745A;
+}
+
+#chat-bot header span {
+  width: 150px;
   text-align: center;
   color: white;
   font-weight: 700;
 }
+
+#chat-bot header button {
+  vertical-align: middle;
+}
+
+#chat-bot header div {
+  margin-left: 10px;
+  margin-right: 0px;
+  padding: 0px;
+  
+}
+
+#short-intro {
+  font-size: 10px;
+  overflow-x: wrap;
+}
+
 .chat-bot-button {
   all: unset;
   border-radius: 3px;
@@ -101,9 +122,8 @@ button[type="submit"]:hover {
 #messages p {
   margin: 0;
   padding: 5px;
-  border-style: solid;
   border-radius: 5px;
-  background-color: rgb(240, 238, 238)
+  background-color: rgb(250, 250, 250)
 }
 /* Fancy Scrollbar */
 #messages::-webkit-scrollbar {

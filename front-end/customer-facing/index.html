@@ -17,7 +17,11 @@
               <button id="live-chat-start">Talk to a live representative</button>
             </section>
           </section>
-          <p>Welcome to 24/7 Teach!</p>
+          <img id= "header-logo" src = "images/twenty-four-seven-teach-logo.png" width = "50px" alt = "24/7 Teach logo">
+          <div>
+            <span>Rebecca-AI</span>
+            <span id = "short-intro"> Our AI powered chatbot can assist you. </span>
+          </div>
           <button id="chat-bot-close" class="chat-bot-button"><img src="images/dash.png" width="20px" alt="dash"></button>
         </header>
         <section id="chat-bot-form">
@@ -30,12 +34,18 @@
         </section>
         <section id="chat-bot-text">
           <section id="messages">
-            <img src="images/twenty-four-seven-teach-logo.png" width="30px" alt="24/7-teach-logo">
-            <p>Hi, my name is Rebecca. How may I help you today?</p>
+            <img src="images/orangelogo.png" width="30px" alt="24/7-teach-logo">
+            <p>Welcome to the chat! I'm here to help you. Click the <img src = "images/questionmark.png" width = "20px"> icon if you need further assisstance.</p>
           </section>
           <form id="question-submit" onsubmit="return false">
-            <input id="question" name="question" type="text">
+            <input id="question" name="question" type="text"  placeholder = "Send a message">
             <button type="submit"><img src="images/send-icon.png" width="20px" alt="send-icon"></button>
+          </form>
+        </section>
+        <section id = "recommended prompts">
+          <form id= "prompt selection" onsubmit="return false">
+            <label for = "prompt">What is 24/7 Teach's goal?</label>
+            <input id="prompt" name="prompt" type="text">
           </form>
         </section>
       </section>
