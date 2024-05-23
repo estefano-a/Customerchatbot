@@ -1,3 +1,10 @@
+/**
+ * Use this file to update and test the openai assistant
+ * documentation used:
+ * https://platform.openai.com/docs/api-reference/assistants
+ * https://platform.openai.com/docs/assistants/overview
+ */
+
 require('dotenv').config();
 const { OpenAI } = require("openai");
 const fs = require('fs');
