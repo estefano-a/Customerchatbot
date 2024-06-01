@@ -74,29 +74,27 @@ window.onload = function() {
     }
   }
   document.querySelector("#question-submit button[type='submit']").onclick = function(){
-    if(!document.querySelector("#question-submit").elements[0].value.equals("")){
-      const newTextBox = document.createElement("p");
-      const firstImage = document.createElement("img");
-      firstImage.src = "images/user-icon.png";
-      firstImage.alt = "user-icon"
-      firstImage.style.width = "30px"
-      const form = document.querySelector("#messages");
-      const question = document.querySelector("#question-submit").elements[0].value;
-      newTextBox.textContent = question;
-      newTextBox.style.height = "min-content";
-      const secondImage = document.createElement("img");
-      secondImage.src = "New images/orangelogo.png";
-      secondImage.alt = "24/7-teach-logo";
-      secondImage.style.height = "30px";
-      form.append(firstImage, newTextBox);
-      if (! liveChat) {
-        form.append(secondImage)
-        callChatBot(question)
-      } else {
-        callLiveRepresentative(question);
-      }
-      document.querySelector("#question-submit").elements[0].value = "";
+    const newTextBox = document.createElement("p");
+    const firstImage = document.createElement("img");
+    firstImage.src = "images/user-icon.png";
+    firstImage.alt = "user-icon"
+    firstImage.style.width = "30px"
+    const form = document.querySelector("#messages");
+    const question = document.querySelector("#question-submit").elements[0].value;
+    newTextBox.textContent = question;
+    newTextBox.style.height = "min-content";
+    const secondImage = document.createElement("img");
+    secondImage.src = "New images/orangelogo.png";
+    secondImage.alt = "24/7-teach-logo";
+    secondImage.style.height = "30px";
+    form.append(firstImage, newTextBox);
+    if (! liveChat) {
+      form.append(secondImage)
+      callChatBot(question)
+    } else {
+      callLiveRepresentative(question);
     }
+    document.querySelector("#question-submit").elements[0].value = "";
   }
 
   document.querySelector("#prompt1").onclick = function(){
