@@ -113,7 +113,7 @@ function requestMessagesAtTime(session, name) {
     for (let i in messages) {
       const img = document.createElement("img");
       if (messages[i].slice(0, 8) == "from247|") {
-        img.src = "images/twenty-four-seven-teach-logo.png";
+        img.src = "../customer-facing/New Images/orangelogo.png";
         img.alt = "twenty-four-seven-teach-logo"
         messages[i] = messages[i].slice(8)
       } else {
@@ -159,7 +159,7 @@ function getCurrentSession(name) {
       for (let i in messages) {
         const img = document.createElement("img");
         if (messages[i].slice(0, 8) == "from247|") {
-          img.src = "images/twenty-four-seven-teach-logo.png";
+          img.src = "../customer-facing/New Images/orangelogo.png";
           img.alt = "twenty-four-seven-teach-logo"
           messages[i] = messages[i].slice(8)
         } else {

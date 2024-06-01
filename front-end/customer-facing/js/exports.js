@@ -45,7 +45,7 @@ function requestResponse() {
     const responses = JSON.parse(this.responseText)
     responses.forEach((i) => {
       const image = document.createElement("img");
-      image.src = "images/twenty-four-seven-teach-logo.png";
+      image.src = "New Images/orangelogo.png";
       image.alt = "24/7-teach-logo";
       image.style.height = "30px";
       const paragraph = document.createElement("p");
