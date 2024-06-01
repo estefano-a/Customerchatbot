@@ -201,8 +201,9 @@ button[type="submit"]:hover {
 #submission-border {
   background-color: #30455C;
   height: 50px;
-  top: -100px;
+  top: 415px;
   width: 300px;
+  position: absolute;
 }
 
 #question-submit button[type="submit"] {
@@ -218,9 +219,11 @@ button[type="submit"]:hover {
   border-color: white;
   height: 50%;
   border-radius: 0px 0px 8px 8px;
-  width: 100%;
-  margin-left: -1.5px;
-  margin-top: 15px;
+  width: 20px;
+  height: 38px;
+  margin-top: 35px;
+  right: 40.5px;
+  position: absolute;
 }
 
 #chat-bot-drop-down-content {
