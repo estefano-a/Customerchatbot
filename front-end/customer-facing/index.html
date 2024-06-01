@@ -11,18 +11,20 @@
     <section id="chat-bot">
       <section id="open-form">
         <header>
-          <section id="chat-bot-drop-down">
-            <button id="chat-bot-extra" class="chat-bot-button"><img src="images/three-dots.png" width="20px" alt="three-dots"></button><br/>
-            <section id="chat-bot-drop-down-content">
-              <button id="live-chat-start">Talk to a live representative</button>
-            </section>
-          </section>
           <img id= "header-logo" src = "New Images/orangelogo.png" width = "40px" alt = "24/7 Teach logo">
           <div>
             <span>Rebecca-AI</span>
             <span id = "short-intro"> Our AI powered chatbot can assist you. </span>
           </div>
-          <button id="chat-bot-close" class="chat-bot-button"><img src="New Images/x-icon.png" width="20px" alt="x"></button>
+          <section id = "header-buttons">
+            <button id="chat-bot-close" class="chat-bot-button"><img src="New Images/x-icon.png" width="10px" alt="x"></button>
+            <section id="chat-bot-drop-down">
+              <button id="chat-bot-extra" class="chat-bot-button"><img src="New Images/question-icon.png" width="15px" alt="question-icon"></button><br/>
+              <section id="chat-bot-drop-down-content">
+                <button id="live-chat-start">Speak to a live representative</button>
+              </section>
+            </section>
+          </section>
         </header>
 
         <section id="chat-bot-form">
@@ -39,18 +41,20 @@
             <img src="New Images/orangelogo.png" width="30px" alt="24/7-teach-logo">
             <p>
               Welcome to the chat! I'm here to help you. Click the <img src = "New Images/question-icon.png" width = "15px"> icon if you need further assisstance.
-              <b><br>Stuck? Try a prompt: 
-                <button id = "prompt1" value = "What is 24/7 Teach's goal?"><u><b>What is 24/7 Teach's goal? </b></u><img src = "New Images/arrow-icon.png" width = "13px"></button>
-                <button id = "prompt2" value = "How much does the UX/UI design course cost?"><u><b>How much does the UX/UI design course cost? </b></u><img src = "New Images/arrow-icon.png" width = "13px"></button>
-                <button id = "prompt3" value = "What types of course does 24/7 Teach offer?"><u><b>What types of course does 24/7 Teach offer? </b></u><img src = "New Images/arrow-icon.png" width = "13px"></button>
+              <br><br><b>Stuck? Try a prompt:</b>
+                <button id = "prompt1" value = "What is 24/7 Teach's goal?"><br><u><b>What is 24/7 Teach's goal?</b></u><img src = "New Images/arrow-icon.png" width = "15px"></button>
+                <button id = "prompt2" value = "How much does the UX/UI design course cost?"><br><u><b>How much does the UX/UI design course cost?</b></u><img src = "New Images/arrow-icon.png" width = "15px"></button>
+                <button id = "prompt3" value = "What types of course does 24/7 Teach offer?"><br><u><b>What types of course does 24/7 Teach offer?</b></u><img src = "New Images/arrow-icon.png" width = "15px"></button>
               </b>
               
             </p>
           </section>
-          <form id="question-submit" onsubmit="return false">
-            <input id="question" name="question" type="text" placeholder = "Send a message">
-            <button type="submit"><img src="New Images/new-send-icon.png" width="20px" alt="send-icon"></button>
-          </form>
+          <section id = "submission-border">
+            <form id="question-submit" onsubmit="return false">
+              <input id="question" name="question" type="text" placeholder = "Send a message">
+              <button type="submit"><img src="New Images/new-send-icon.png" width="20px" alt="send-icon"></button>
+            </form>
+          </section>
         </section>
       </section>
 

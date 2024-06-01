@@ -29,7 +29,7 @@ function updateForCookies() {
     document.querySelector("#chat-bot-form").remove();
     document.querySelector("#chat-bot-text").style.display = "block";
     const image = document.createElement("img");
-    image.src = "images/orangelogo.png";
+    image.src = "New images/orangelogo.png";
     image.alt = "24/7-teach-logo";
     image.style.height = "30px";
     const newTextBox = document.createElement("p");
@@ -37,29 +37,6 @@ function updateForCookies() {
     newTextBox.height = "min-content";
     form.append(image, newTextBox);
     updateGlobalName(getCookie("name"))
-  }
-}
-
-function submitPrompt(elementI){
-  const newTextBox = document.createElement("p");
-  const firstImage = document.createElement("img");
-  firstImage.src = "images/user-icon.png";
-  firstImage.alt = "user-icon"
-  firstImage.style.width = "30px"
-  const form = document.querySelector("#messages");
-  const question = document.querySelector("#prompt").value;
-  newTextBox.textContent = question;
-  newTextBox.style.height = "min-content";
-  const secondImage = document.createElement("img");
-  secondImage.src = "New images/orangelogo.png";
-  secondImage.alt = "24/7-teach-logo";
-  secondImage.style.height = "30px";
-  form.append(firstImage, newTextBox);
-  if (! liveChat) {
-    form.append(secondImage)
-    callChatBot(question)
-  } else {
-    callLiveRepresentative(question);
   }
 }
 
@@ -107,7 +84,7 @@ window.onload = function() {
     newTextBox.textContent = question;
     newTextBox.style.height = "min-content";
     const secondImage = document.createElement("img");
-    secondImage.src = "images/orangelogo.png";
+    secondImage.src = "New images/orangelogo.png";
     secondImage.alt = "24/7-teach-logo";
     secondImage.style.height = "30px";
     form.append(firstImage, newTextBox);
@@ -214,7 +191,7 @@ window.onload = function() {
       requestResponse();
       setInterval(requestResponse, 1000);
       const image = document.createElement("img");
-      image.src = "images/orangelogo.png";
+      image.src = "New images/orangelogo.png";
       image.alt = "24/7-teach-logo";
       image.style.height = "30px";
       const message = document.createElement("p");
@@ -231,4 +208,4 @@ window.onbeforeunload = function() {
   closeWindow();
 }
 
-document.cookie = "name=YourName; path=/";
+// document.cookie = "name=YourName; path=/";

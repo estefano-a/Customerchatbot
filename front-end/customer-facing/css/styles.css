@@ -4,7 +4,7 @@
   bottom: 20px;
   left: 20px;
   background-color: #EAF0F3;
-  height: 390px;
+  height: 460px;
   width: 300px;
   font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   display: none;
@@ -28,20 +28,35 @@
 }
 #chat-bot header {
   background-color: #30455C;
-  display: inline-flex;
-  flex: auto;
+  display: flex;
+  justify-content: space-between;
   height: 25%;
 }
+
 #header-logo {
   object-fit: contain;
-  border:  solid #CC745A;
+  margin-bottom: 14px;
+  margin-left: 15px;
+}
+
+#header-buttons {
+  border-color: white;
+  border-style: solid;
+  height: 65%;
+  width: 40px;
+  float:inline-end;
+  margin-right: 40px;
+  margin-bottom: 25px;
+  margin-top: 10px;
+  border-radius: 8px;
+  background-color: #63697A;
 }
 
 #chat-bot header span {
   width: 150px;
-  text-align: center;
   color: white;
   font-weight: 700;
+  text-align: left;
 }
 
 #chat-bot header button {
@@ -49,15 +64,16 @@
 }
 
 #chat-bot header div {
-  margin-left: 10px;
+  margin-left: 20px;
   margin-right: 0px;
   padding: 0px;
-  
+  margin-top: 15px;
 }
 
 #short-intro {
   font-size: 10px;
   overflow-x: wrap;
+  margin-top: 10px;
 }
 
 .chat-bot-button {
@@ -67,28 +83,56 @@
 .chat-bot-button:hover {
   background-color: lightgray;
   opacity: 20%;
+  background: no-repeat;
 }
 #chat-bot-extra {
-  margin-left: 15px;
   position: relative;
   display: inline-block;
+  margin-left: 16%;
+  margin-top: 12px;
 }
+
+#chat-bot-close {
+  margin-left: 26%;
+}
+
 /* Form */
-#chat-bot-form, #chat-bot-text {
+#chat-bot-form {
   margin: 10px;
   font-size: 14px;
-  background-color: white;
+  background-color: #EAF0F3;
   border-radius: 5px;
   padding: 5px;
   height: 305.5px;
 }
 #chat-bot-text {
   display: none;
+  font-size: 14px;
+  background-color: #EAF0F3;
+  border-radius: 5px;
+  padding: 5px 5px 0px 0px;
+  height: 300px;
 }
+
+#chat-bot-text button{
+  border: none;
+  color: black;
+  text-align: left;
+  font-size: 14px;
+  cursor: pointer;
+  margin: 0px;
+  padding: none;
+}
+
+#chat-bot-text button:hover{
+  opacity: 60%;
+}
+
 #chat-bot-form p {
   margin: 0;
   font-size: 14px;
 }
+
 /* Form buttons */
 input, button[type="submit"] {
   width: 100%;
@@ -100,37 +144,43 @@ button[type="submit"] {
   color: white;
   font-weight: 700;
   border-style: none;
-  border-radius: 5px;
+  border-radius: 20px;
   font-size: 16px;
   height: 39px;
 }
 button[type="submit"]:hover {
   opacity: 80%;
 }
+
 /* Actual chat-bot */
 #chat-bot-text {
   display: none;
 }
+
 #messages {
   display: grid;
   grid-template-columns: auto auto;
   grid-template-rows: min-content;
   gap: 5px;
   overflow-y: scroll;
-  max-height: 269px;
+  max-height: 280px;
+  margin: 0px 10px 5px 10px;
 }
 #messages p {
   margin: 0;
   padding: 5px;
+  border-style: solid;
   border-radius: 5px;
-  background-color: rgb(250, 250, 250)
+  background-color: #EAF0F3;
+  max-width: 200px;
+  font-size: 13px;
 }
 /* Fancy Scrollbar */
 #messages::-webkit-scrollbar {
   width: 5px;
 }
 #messages::-webkit-scrollbar-track {
-  background: white;
+  background: #EAF0F3;
 }
 #messages::-webkit-scrollbar-thumb {
   background: #888;
@@ -142,32 +192,71 @@ button[type="submit"]:hover {
 /* Submitting Questions */
 #question-submit {
   position: absolute;
-  bottom: 15px;
+  bottom: 8px;
   width: 230px;
+  left: 5px;
+  padding: 5px;
 }
+
+#submission-border {
+  background-color: #30455C;
+  height: 50px;
+  top: -100px;
+  width: 300px;
+}
+
 #question-submit button[type="submit"] {
   position: absolute;
   width: 40px;
   height: 31.5px;
+  border-radius: 10px;
+  left: 240px;
 }
 /* Drop Down */
-#chat-bot-drop-down-content {
-  display: none;
-  position: absolute;
-  z-index: 1;
-  margin-top: 10px;
+#chat-bot-drop-down {
+  border: solid;
+  border-color: white;
+  height: 50%;
+  border-radius: 0px 0px 8px 8px;
   width: 100%;
+  margin-left: -1.5px;
+  margin-top: 15px;
 }
+
+#chat-bot-drop-down-content {
+  display: grid;
+  position:fixed;
+  z-index: 1;
+  margin-top: 8px;
+  width: 300px;
+  left: 0;
+  margin-left: 20px;
+}
+
+#chat-bot-drop-down-content::before{
+  content: " ";
+  position: absolute;
+  top: -15px;
+  left: 79%;
+  border: 10px solid transparent;
+  border-bottom-color: #A7B1C2;
+}
+
 #chat-bot-drop-down-content * {
   all: unset;
-  background-color: #EAF0F3;
+  background-color: #A7B1C2;
   font-size: 14px;
-  margin: 0;
   padding: 5px;
   font-weight: 400;
   width: 100%;
   box-sizing: border-box;
+  float: left;
+  color: white;
+  text-align: center;
+  height: 30px;
+  vertical-align: middle;
 }
+
 #chat-bot-drop-down-content button:hover {
-  background-color: #c7cccf;
+  color: black;
 }
