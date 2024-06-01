@@ -93,7 +93,7 @@
 }
 
 #chat-bot-close {
-  margin-left: 26%;
+  margin-left: 6px;
 }
 
 /* Form */
@@ -213,6 +213,13 @@ button[type="submit"]:hover {
   border-radius: 10px;
   left: 240px;
 }
+
+#submit-button {
+  margin-left: 4px;
+  margin-top: -10px;
+  position: fixed;
+}
+
 /* Drop Down */
 #chat-bot-drop-down {
   border: solid;
