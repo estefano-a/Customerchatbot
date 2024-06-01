@@ -43,15 +43,17 @@ async function callChatBot(str) {
           run.thread_id,
           run.id
       );
-      console.log("Status of run is:" , result.status);
-    
+
       if(result.status == 'completed'){
           const threadMessages = await openai.beta.threads.messages.list(
               run.thread_id
             );
 
-          console.log(threadMessages.data[0].content[0].text.value)
-          return threadMessages.data[0].content[0].text.value;
+          const response = threadMessages.data[0].content[0].text.value;
+          const cleanedResponse = response.replace(/【\d+:\d+†source】/g, '');
+          console.log(cleanedResponse);
+
+          return cleanedResponse;
       }
     }
   } catch (error) {

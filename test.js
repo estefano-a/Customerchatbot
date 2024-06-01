@@ -50,4 +50,19 @@ async function main() {
     }
 }
 
-main();
+// //reading files
+const schemaFile = "chatgptSchema.txt";
+const systemSchema = fs.readFileSync(schemaFile, "utf-8");
+
+async function editInstructions(){
+  const myUpdatedAssistant = await openai.beta.assistants.update(
+    process.env.OPENAI_ASSISTANT_ID,
+    {
+      instructions: systemSchema
+    }
+  );
+
+  console.log(myUpdatedAssistant);
+}
+
+editInstructions();
