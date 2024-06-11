@@ -174,41 +174,43 @@ window.onload = function() {
     }
   }
 
-  document.querySelector("#chat-bot-extra").onclick = function(){
-    const dropDown = document.querySelector("#chat-bot-drop-down-content");
-    if (dropDown.style.display == "block") {
-      dropDown.style.display = "none";
-    } else {
-      dropDown.style.display = "block";
-    };
-  }
-  document.querySelector("#live-chat-start").onclick = function(){
-    if (document.querySelector("#chat-bot-drop-down-content p") == null && document.querySelector("#chat-bot-text").style.display != "block") {
-      const errorMessage = document.createElement("p");
-      errorMessage.textContent = "Please send the form first";
-      errorMessage.style.cssText = `
-        width: 100%;
-        text-align: left;
-        font-weight: 400;
-        color: red;
-      `;
-      document.querySelector("#chat-bot-drop-down-content").appendChild(errorMessage);
-    } else if (document.querySelector("#waiting-message") == null) {
-      liveChat = true;
-      addToLiveChat();
-      requestResponse();
-      setInterval(requestResponse, 1000);
-      const image = document.createElement("img");
-      image.src = "New images/orangelogo.png";
-      image.alt = "24/7-teach-logo";
-      image.style.height = "30px";
-      const message = document.createElement("p");
-      message.textContent = "Please wait while we get a customer service agent on call";
-      message.id = "waiting-message";
-      message.style.height = "min-content";
-      document.querySelector("#messages").append(image, message);
-    }
-  }
+  
+
+  // document.querySelector("#chat-bot-extra").onclick = function(){
+  //   const dropDown = document.querySelector("#chat-bot-drop-down-content");
+  //   if (dropDown.style.display == "block") {
+  //     dropDown.style.display = "none";
+  //   } else {
+  //     dropDown.style.display = "block";
+  //   };
+  // }
+  // document.querySelector("#live-chat-start").onclick = function(){
+  //   if (document.querySelector("#chat-bot-drop-down-content p") == null && document.querySelector("#chat-bot-text").style.display != "block") {
+  //     const errorMessage = document.createElement("p");
+  //     errorMessage.textContent = "Please send the form first";
+  //     errorMessage.style.cssText = `
+  //       width: 100%;
+  //       text-align: left;
+  //       font-weight: 400;
+  //       color: red;
+  //     `;
+  //     document.querySelector("#chat-bot-drop-down-content").appendChild(errorMessage);
+  //   } else if (document.querySelector("#waiting-message") == null) {
+  //     liveChat = true;
+  //     addToLiveChat();
+  //     requestResponse();
+  //     setInterval(requestResponse, 1000);
+  //     const image = document.createElement("img");
+  //     image.src = "New images/orangelogo.png";
+  //     image.alt = "24/7-teach-logo";
+  //     image.style.height = "30px";
+  //     const message = document.createElement("p");
+  //     message.textContent = "Please wait while we get a customer service agent on call";
+  //     message.id = "waiting-message";
+  //     message.style.height = "min-content";
+  //     document.querySelector("#messages").append(image, message);
+  //   }
+  // }
   updateForCookies();
 };
 
