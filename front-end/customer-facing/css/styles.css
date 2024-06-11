@@ -54,14 +54,14 @@
 }
 
 #short-intro {
-  font-size: 10px;
+  font-size: 12px;
   overflow-x: wrap;
-  margin-top: 10px;
+  margin-top: 5px;
 }
 
 .chat-bot-button:hover {
   background-color: lightgray;
-  opacity: 20%;
+  opacity: 60%;
   background: no-repeat;
 }
 
