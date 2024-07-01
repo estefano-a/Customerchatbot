@@ -1,5 +1,4 @@
 import {callLiveRepresentative, callChatBot, sendUserInfo, requestResponse, updateGlobalName, addToLiveChat, closeWindow} from "./exports.js";
-//comment
 
 function setCookie(cname, cvalue, exdays) {
   const d = new Date();
