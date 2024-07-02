@@ -14,6 +14,14 @@ const slackApp = new App({
   token: process.env.SLACK_BOT_TOKEN,
 });
 
+//trying new code
+const bodyParser = require(‘body-parser’); // Add this line if body-parser is not being used already
+const app = express();
+// Middleware to parse JSON bodies
+app.use(express.json()); // Use this for parsing JSON
+// Alternatively, if you are using body-parser
+app.use(bodyParser.json()); // Use this if using body-parser
+
 const port = process.env.PORT || 10000;
 const app = express();
 app.use(express.json());
