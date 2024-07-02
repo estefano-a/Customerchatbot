@@ -19,6 +19,7 @@ client.connect();
 // //reading files
 // const schemaFile = "chatgptSchema.txt";
 // const systemSchema = fs.readFileSync(schemaFile, "utf-8");
+//hello there
 
 async function callChatBot(str) {
   try {
