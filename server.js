@@ -251,30 +251,6 @@ http.createServer(async function (req, res) {
           });
           res.end(JSON.stringify(sessionMessages));
           break;
-        case "send-message":
-          const { type } = body;
-          let text;
-          if (type === 'like') {
-            text = "Our user gave a 👍 on Rebecca's performance.";
-          } else if (type === 'dislike') {
-            text = "Our user gave a 👎 on Rebecca's performance.";
-          }
-          try {
-            await slackApp.client.chat.postMessage({
-              token: process.env.SLACK_BOT_TOKEN,
-              channel: process.env.SLACK_CHANNEL,
-              text: text,
-            });
-            res.end(JSON.stringify({ status: 'Message sent' }));
-          } catch (error) {
-            console.error(error);
-            res.statusCode = 500;
-            res.end(JSON.stringify({ error: 'Error sending message' }));
-          }
-          break;
-        default:
-          res.statusCode = 400;
-          res.end(JSON.stringify({ error: 'Invalid request' }));
       }
     } catch (error) {
       console.error('Error handling request:', error);
