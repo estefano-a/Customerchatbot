@@ -119,6 +119,15 @@ async function addMessage(name, message, recipient) {
   unreadMessages.push([name, message, recipient]);
 }
 
+async function getLatestMessage(name) {
+  const result = await client.db(chatDatabase).collection(messagesCollection).find({
+    "reciever": name,
+    "sender": "chat-bot"
+  }).sort({ time: -1 }).limit(1).toArray();
+
+  return result.length > 0 ? result[0].messageSent : null;
+}
+
 http.createServer(async function (req, res) {
   let body = "";
   req.on('data', chunk => {
@@ -137,13 +146,17 @@ http.createServer(async function (req, res) {
       switch (body.request) {
         case "send-message":
           const { type } = body;
-          let text;
+          let feedbackText;
           if (type === 'like') {
-            text = "Our user gave a 👍 on Rebecca's performance.";
+            feedbackText = "Our user gave a 👍 on Rebecca's performance.";
           } else if (type === 'dislike') {
-            text = "Our user gave a 👎 on Rebecca's performance.";
+            feedbackText = "Our user gave a 👎 on Rebecca's performance.";
           }
+
           try {
+            const latestMessage = await getLatestMessage(body.name);
+            const text = latestMessage ? `${feedbackText}\nLatest response from Rebecca: ${latestMessage}` : feedbackText;
+
             await slackApp.client.chat.postMessage({
               token: process.env.SLACK_BOT_TOKEN,
               channel: process.env.SLACK_CHANNEL,
