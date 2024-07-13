@@ -164,27 +164,7 @@ http
               feedbackText = "Our user gave a 👎 on Rebecca's performance.";
             }
 
-            if (window.getSelection) {
-              return window.getSelection().toString();
-            } else if (
-              document.selection &&
-              document.selection.type != "Control"
-            ) {
-              return document.selection.createRange().text;
-            }
-            return "";
-
             try {
-              if (window.getSelection) {
-                return window.getSelection().toString();
-              } else if (
-                document.selection &&
-                document.selection.type != "Control"
-              ) {
-                return document.selection.createRange().text;
-              }
-              return "";
-
               const latestMessage = await getLatestMessage(body.name);
               const text = latestMessage
                 ? `${feedbackText}\nLatest response from Rebecca: ${latestMessage}`
