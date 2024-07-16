@@ -165,7 +165,7 @@ http
             }
 
             try {
-              const latestMessage = await getLatestMessage(body.name);
+              const latestMessage = await getLatestMessage(body.latestMessage);
               const text = latestMessage
                 ? `${feedbackText}\nLatest response from Rebecca: ${latestMessage}`
                 : feedbackText;
