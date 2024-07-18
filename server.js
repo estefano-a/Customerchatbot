@@ -157,6 +157,7 @@ http
         switch (body.request) {
           case "send-message":
             const { type } = body;
+            const { latestMessage } = body;
             let feedbackText;
             if (type === "like") {
               feedbackText = "Our user gave a 👍 on Rebecca's performance.";
@@ -165,7 +166,7 @@ http
             }
 
             try {
-              const latestMessage = await getLatestMessage(body.name);
+              // const latestMessage = await getLatestMessage(body.name);
               const text = latestMessage
                 ? `${feedbackText}\nLatest response from Rebecca: ${latestMessage}`
                 : feedbackText;
@@ -184,7 +185,7 @@ http
             break;
           case "get-latest-message":
             try {
-              const { latestMessage } = body;
+              const { name } = body;
               const latestMessage = await getLatestMessage(name);
               res.end(JSON.stringify({ latestMessage: latestMessage || "" }));
             } catch (error) {
