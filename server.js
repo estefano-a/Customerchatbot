@@ -184,7 +184,7 @@ http
             break;
           case "get-latest-message":
             try {
-              const { name } = body;
+              const { latestMessage } = body;
               const latestMessage = await getLatestMessage(name);
               res.end(JSON.stringify({ latestMessage: latestMessage || "" }));
             } catch (error) {
