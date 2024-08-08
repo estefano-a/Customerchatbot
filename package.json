@@ -6,6 +6,7 @@
     "fs": "^0.0.1-security",
     "http": "^0.0.1-security",
     "mongodb": "^6.6.1",
-    "openai": "^4.47.1"
+    "openai": "^4.47.1",
+    "ws": "^8.18.0"
   }
 }
