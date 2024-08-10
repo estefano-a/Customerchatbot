@@ -143,26 +143,14 @@ async function getLatestMessage(name) {
 }
 
 function convertUrlsToLinks(text) {
-    const markdownUrlRegex = /\[.*?\]\((https?:\/\/[^\s]+)\)/g;
-    const plainUrlRegex = /https?:\/\/[^\s]+/g;
+    const urlRegex = /https?:\/\/[^\s]+/g;
 
-    // Convert plain URLs to HTML links
-    text = text.replace(plainUrlRegex, function(url) {
-        // Skip if it's already part of a markdown link
-        if (markdownUrlRegex.test(text)) {
-            return url;
-        }
-        return `<a href="${url}">${url}</a>`;
+    return text.replace(urlRegex, function(url) {
+        // Use "Click Here" as the default display text, or modify as needed
+        const displayText = "Click Here";  
+        return `<a href="${url}">${displayText}</a>`;
     });
-
-    // Convert markdown links to HTML links
-    text = text.replace(markdownUrlRegex, function(match, url) {
-        return `<a href="${url}">${url}</a>`;
-    });
-
-    return text;
 }
-
 
 http
   .createServer(async function (req, res) {
