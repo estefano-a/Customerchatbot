@@ -51,7 +51,11 @@ async function callChatBot(str) {
         const cleanedResponse = response.replace(/【\d+:\d+†source】/g, "");
         console.log(cleanedResponse);
 
-        return cleanedResponse;
+        const responseWithLinks = convertUrlsToLinks(cleanedResponse);
+        console.log(responseWithLinks);
+
+        return responseWithLinks;
+        //return cleanedResponse;
       }
     }
   } catch (error) {
@@ -138,6 +142,13 @@ async function getLatestMessage(name) {
   return result.length > 0 ? result[0].messageSent : null;
 }
 
+function convertUrlsToLinks(text) {
+    const urlRegex = /https?:\/\/[^\s]+/g;
+    return text.replace(urlRegex, function(url) {
+        return `<a href="${url}">${url}</a>`;
+    });
+}
+
 http
   .createServer(async function (req, res) {
     let body = "";
@@ -217,6 +228,12 @@ http
           case "callChatBot":
             await addMessage(body.name, body.message, "chat-bot");
             const response = await callChatBot(body.message);
+
+            res.writeHead(200, {
+                "Content-Type": "text/html",  // Ensure HTML content-type
+                "Access-Control-Allow-Origin": "*",
+            });
+            
             await addMessage("chat-bot", response, body.name);
             res.end(response);
             break;
