@@ -23,7 +23,7 @@ const namesAndEmailsCollection = "namesAndEmails";
 const messagesCollection = "messages";
 client.connect();
 
-const md = new MarkdownIt();
+//const md = new MarkdownIt();
 
 async function callChatBot(str) {
   try {
