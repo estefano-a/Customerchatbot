@@ -7,6 +7,7 @@
     "http": "^0.0.1-security",
     "mongodb": "^6.6.1",
     "openai": "^4.47.1",
+    "markdown-it": "^14.1.0",
     "ws": "^8.18.0"
   }
 }
