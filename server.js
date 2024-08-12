@@ -51,10 +51,16 @@ async function callChatBot(str) {
         );
 
         const response = threadMessages.data[0].content[0].text.value;
+        
+        // Clean up the response text
         const cleanedResponse = response.replace(/【\d+:\d+†source】/g, "");
         console.log(cleanedResponse);
-
-        return cleanedResponse;
+        
+        // Convert Markdown to HTML
+        const htmlResponse = md.render(cleanedResponse);
+        
+        // Return the HTML response
+        return htmlResponse;
       }
     }
   } catch (error) {
@@ -62,6 +68,7 @@ async function callChatBot(str) {
     return "";
   }
 }
+
 
 function currentTime() {
   let d = new Date();
