@@ -155,15 +155,6 @@ http
         });
 
         switch (body.request) {
-          case "generate-link":
-            res.writeHead(200, {
-            "Content-Type": "text/html",  // Set Content-Type to text/html
-            "Access-Control-Allow-Origin": "*",
-          });
-          const htmlContent = '<a href="https://247teach.org/education-marketplace/ux-ui-design-bootcamp">UX/UI Bootcamp</a>';
-          res.end(htmlContent);  // Send the HTML content as the response
-          break;
-
           case "send-message":
             const { type } = body;
             const { latestMessage } = body;
