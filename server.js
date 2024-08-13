@@ -4,7 +4,6 @@ const { MongoClient } = require("mongodb");
 const { OpenAI } = require("openai");
 const { App } = require("@slack/bolt");
 const fs = require("fs");
-const MarkdownIt = require("markdown-it")
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const port = process.env.PORT || 10000;
 
@@ -22,8 +21,6 @@ const chatDatabase = "chatdb";
 const namesAndEmailsCollection = "namesAndEmails";
 const messagesCollection = "messages";
 client.connect();
-
-const md = new MarkdownIt();
 
 async function callChatBot(str) {
   try {
@@ -51,16 +48,10 @@ async function callChatBot(str) {
         );
 
         const response = threadMessages.data[0].content[0].text.value;
-        
-        // Clean up the response text
         const cleanedResponse = response.replace(/【\d+:\d+†source】/g, "");
         console.log(cleanedResponse);
-        
-        // Convert Markdown to HTML
-        const htmlResponse = md.render(cleanedResponse);
-        
-        // Return the HTML response
-        return htmlResponse;
+
+        return cleanedResponse;
       }
     }
   } catch (error) {
@@ -68,7 +59,6 @@ async function callChatBot(str) {
     return "";
   }
 }
-
 
 function currentTime() {
   let d = new Date();
