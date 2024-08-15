@@ -49,9 +49,12 @@ async function callChatBot(str) {
 
         const response = threadMessages.data[0].content[0].text.value;
         const cleanedResponse = response.replace(/【\d+:\d+†source】/g, "");
-        console.log(cleanedResponse);
+        
+        // Format hyperlinks for Markdown
+        const formattedResponse = cleanedResponse.replace(/http(s)?:\/\/\S+/g, url => `[${url}](${url})`);
 
-        return cleanedResponse;
+        console.log(formattedResponse);
+        return formattedResponse;
       }
     }
   } catch (error) {
