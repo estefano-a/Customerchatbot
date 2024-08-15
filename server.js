@@ -143,10 +143,10 @@ async function getLatestMessage(name) {
 
 //Code to connect Rebecca to live support - Aug 15, 2024
 // Set up WebSocket server
-//Already connected to websocket in squarespace code
-//const wss = new WebSocket.Server({ port: 2001 }); // WebSocket listens on port 2001
+
+const wss = new WebSocket.Server({ port: 2001 }); // WebSocket listens on port 2001
 const connectedClients = [];
-const slackChannels = ['C05UEQHN7RU', 'C05UME17ZV0', 'C05V03CCQN5', 'C05UME2PU4S', 'C05UMB84Y0K']; // Example Slack channels
+const slackChannels = ['C07GQG61SUF', 'C07GQGFGYNB', 'C07HHNWQA1F', 'C07H26MKCG5', 'C07H53CELUS']; // Rebecca Support Slack channels
 
 // Client connection object constructor
 function ClientConnection(ws, channelIndex) {
