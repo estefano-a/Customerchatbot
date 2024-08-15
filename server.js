@@ -3,7 +3,7 @@ const http = require("http");
 const { MongoClient } = require("mongodb");
 const { OpenAI } = require("openai");
 const { App } = require("@slack/bolt");
-const WebSocket = require('ws'); // used to create a websocket chat server
+const WebSocket = require('ws');
 const fs = require("fs");
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const port = process.env.PORT || 10000;
@@ -23,7 +23,15 @@ const namesAndEmailsCollection = "namesAndEmails";
 const messagesCollection = "messages";
 client.connect();
 
+// Flag to control AI vs. Live Support mode
+let isLiveSupportMode = false;
+
 async function callChatBot(str) {
+  if (isLiveSupportMode) {
+    console.log("AI responses are disabled. Currently in live support mode.");
+    return "Live support is active. Please wait for a response.";
+  }
+
   try {
     const run = await openai.beta.threads.createAndRun({
       assistant_id: process.env.OPENAI_ASSISTANT_ID,
@@ -144,7 +152,6 @@ async function getLatestMessage(name) {
 
 //Code to connect Rebecca to live support - Aug 15, 2024
 // Set up WebSocket server
-
 const wss = new WebSocket.Server({ port: 2001 }); // WebSocket listens on port 2001
 const connectedClients = [];
 const slackChannels = ['C07GQG61SUF', 'C07GQGFGYNB', 'C07HHNWQA1F', 'C07H26MKCG5', 'C07H53CELUS']; // Rebecca Support Slack channels
@@ -241,7 +248,6 @@ http
             }
 
             try {
-              // const latestMessage = await getLatestMessage(body.name);
               const text = latestMessage
                 ? `${feedbackText}\nLatest response from Rebecca: ${latestMessage}`
                 : feedbackText;
@@ -392,7 +398,8 @@ http
             res.end(JSON.stringify(sessionMessages));
             break;
             case "start-websocket-session":
-            // You can implement any WebSocket-related initialization logic here if needed
+            // Set the flag to true to disable AI responses and switch to live support
+            isLiveSupportMode = true;
             res.end(JSON.stringify({ status: "WebSocket session started" }));
             break;
           default:
