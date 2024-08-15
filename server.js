@@ -3,6 +3,7 @@ const http = require("http");
 const { MongoClient } = require("mongodb");
 const { OpenAI } = require("openai");
 const { App } = require("@slack/bolt");
+const WebSocket = require('ws'); // used to create a websocket chat server
 const fs = require("fs");
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const port = process.env.PORT || 10000;
@@ -144,7 +145,7 @@ async function getLatestMessage(name) {
 //Code to connect Rebecca to live support - Aug 15, 2024
 // Set up WebSocket server
 
-const wss = new WebSocket.Server({ port: 2001 }); // WebSocket listens on port 2001
+//const wss = new WebSocket.Server({ port: 2001 }); // WebSocket listens on port 2001
 const connectedClients = [];
 const slackChannels = ['C07GQG61SUF', 'C07GQGFGYNB', 'C07HHNWQA1F', 'C07H26MKCG5', 'C07H53CELUS']; // Rebecca Support Slack channels
 
