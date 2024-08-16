@@ -216,6 +216,9 @@ slackApp.message(async ({ message, say }) => {
     console.log('Message forwarded to WebSocket client:', text);
   }
 });
+//End of Live Support code
+
+
 
 http
   .createServer(async function (req, res) {
