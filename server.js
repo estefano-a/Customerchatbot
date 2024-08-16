@@ -149,7 +149,7 @@ async function getLatestMessage(name) {
 //Code to connect Rebecca to live support - Aug 15, 2024
 // Set up WebSocket server
 
-const wss = new WebSocket.Server({ port: process.env.PORT || 3000 });
+const wss = new WebSocket.Server({ port });
 const connectedClients = [];
 const slackChannels = ['C07GQG61SUF', 'C07GQGFGYNB', 'C07HHNWQA1F', 'C07H26MKCG5', 'C07H53CELUS']; // Rebecca Support Slack channels
 
