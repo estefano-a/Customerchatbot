@@ -416,7 +416,7 @@ function connect_to_chat_server() {
   // received a message
   conn.onmessage = function (e) {
     // insert logic here for when the user receives a message from slack
-    console.log(trying to get message);
+    console.log("trying to get message");
   };
 
   // disconnected from chat server
