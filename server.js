@@ -5,7 +5,6 @@ const { OpenAI } = require("openai");
 const { App } = require("@slack/bolt");
 const WebSocket = require('ws');
 const fs = require("fs");
-const fetch = require('node-fetch');
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const port = process.env.PORT || 10000;
 
@@ -567,19 +566,19 @@ function send_to_slack_api(channelId, msg) {
     const fullUrl = `${slack_api_send_msg_url}?channelId=${channelId}&message=${msg}`;
     console.log(`Full URL: ${fullUrl}`);
     
-    // Make a GET request to the API endpoint
-    fetch(fullUrl, {
-        method: 'GET',
-    }).then((response) => {
-        if (response.ok) {
-            console.log('Message Sent to channel: ' + String(channelId));
-            console.log(`Message content: ${msg}`);
-        } else {
-            console.error('Error:', response.statusText);
-        }
-    }).catch((error) => {
-        console.error('Request failed:', error);
-    });
+    // // Make a GET request to the API endpoint
+    // fetch(fullUrl, {
+    //     method: 'GET',
+    // }).then((response) => {
+    //     if (response.ok) {
+    //         console.log('Message Sent to channel: ' + String(channelId));
+    //         console.log(`Message content: ${msg}`);
+    //     } else {
+    //         console.error('Error:', response.statusText);
+    //     }
+    // }).catch((error) => {
+    //     console.error('Request failed:', error);
+    // });
 }
 
 
