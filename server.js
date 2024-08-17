@@ -401,8 +401,45 @@ http
             // Set the flag to true to disable AI responses and switch to live support
             isLiveSupportMode = true;
             res.end(JSON.stringify({ status: "WebSocket session started" }));
-            console.log(object);
+           
 
+const conn = new WebSocket("wss://live-chat-chatserver.onrender.com");
+
+function connect_to_chat_server() {
+  console.log("attempting to connect");
+
+  // connected to websocket chat server successfully
+  conn.onopen = function (e) {
+    console.log("Connection established!");
+  };
+
+  // received a message
+  conn.onmessage = function (e) {
+    // insert logic here for when the user receives a message from slack
+    console.log(trying to get message);
+  };
+
+  // disconnected from chat server
+  conn.onclose = function (e) {
+    console.log(e.code);
+    console.log(e.reason);
+  };
+
+  // error occurred while connected to the websocket
+  conn.onerror = function (e) {
+    console.log("error from websocket", e);
+  };
+}
+
+function send_to_chat_server(message) {
+  if (conn.readyState === WebSocket.OPEN) {
+    conn.send("client:" + message);
+  } else {
+    console.error("WebSocket is not open.");
+  }
+}
+
+connect_to_chat_server();
 
 // will store client connection objects that are connected
 // stores ClientConnection objects
