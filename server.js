@@ -5,7 +5,6 @@ const { OpenAI } = require("openai");
 const { App } = require("@slack/bolt");
 const WebSocket = require('ws');
 const fs = require("fs");
-const fetch = require("node-fetch");
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const port = process.env.PORT || 10000;
 
