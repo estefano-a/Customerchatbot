@@ -340,6 +340,7 @@ http
 
             try {
   wss = new WebSocket.Server({ port: 443 });
+              console.log("WebSocket connection successful");
 } catch (error) {
   console.error('WebSocket server setup failed:', error);
 }
@@ -355,7 +356,7 @@ function ClientConnection(ws, channelIndex) {
 
 // Handle WebSocket connections
 wss.on('connection', function connection(ws) {
-  ws.on('message', async function incoming(message) {
+  ws.on('messages', async function incoming(message) {
     console.log('received:', message);
 
     // Parse the message from the client
@@ -418,11 +419,6 @@ slackApp.message(async ({ message, say }) => {
             // check if channel is occupied
 const channelOccupied = [false, false, false, false, false];
 
-// client connection object constructors (used to store websocket and channel index information)
-function ClientConnection(ws, channelIndex) {
-    this.websocket = ws;
-    this.channelIndex = channelIndex;
-}
 
 // url of flask api (to send messages to slack)
 const slack_api_send_msg_url = "https://live-chat-api-ejiw.onrender.com/send-message";
