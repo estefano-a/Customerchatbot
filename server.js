@@ -383,6 +383,9 @@ wss.on('connection', function connection(ws) {
     // Remove the client from the connectedClients array
     connectedClients = connectedClients.filter(client => client.websocket !== ws);
   });
+  wss.close(function() {
+    console.log('WebSocket server closed');
+});
 });
 
 // Send message to Slack channel
@@ -421,7 +424,7 @@ const channelOccupied = [false, false, false, false, false];
 
 
 // url of flask api (to send messages to slack)
-const slack_api_send_msg_url = "https://live-chat-api-ejiw.onrender.com/send-message";
+//const slack_api_send_msg_url = "https://live-chat-api-ejiw.onrender.com/send-message";
 
 
 // when someone connects to the websocket server
@@ -551,10 +554,10 @@ wss.on('connection', function connection(ws) {
             }
         }
     });
+  wss.close(function() {
+    console.log('WebSocket server closed');
 });
-
-// perform api call to send a message to the channel with the passed in channel id
-const https = require('https');
+});
 
 // Perform API call to send a message to the channel with the passed in channel id
 function send_to_slack_api(channelId, msg) {
@@ -689,6 +692,10 @@ function getClientIndex(ws) {
 
 
 
+            
+            break;
+          case "live-support-session":
+            //For the submit button to continue getting messages to slack
             
             break;
           default:
