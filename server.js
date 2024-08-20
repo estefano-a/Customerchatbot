@@ -333,7 +333,7 @@ http
             const { messages } = body;
             console.log(`${messages}`);
             isLiveSupportMode = true;
-            res.end(JSON.stringify({ status: "WebSocket session started" }));
+            //res.end(JSON.stringify({ status: "WebSocket session started" }));
 
             //Code to connect Rebecca to live support - Aug 15, 2024
 // Set up WebSocket server
