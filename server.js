@@ -5,8 +5,10 @@ const { OpenAI } = require("openai");
 const { App } = require("@slack/bolt");
 const WebSocket = require('ws');
 const fs = require("fs");
+const https = require('https');
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const port = process.env.PORT || 10000;
+
 
 const slackApp = new App({
   signingSecret: process.env.SLACK_SIGNING_SECRET,
@@ -408,6 +410,285 @@ slackApp.message(async ({ message, say }) => {
     console.log('Message forwarded to WebSocket client:', text);
   }
 });
+
+
+
+
+
+            // check if channel is occupied
+const channelOccupied = [false, false, false, false, false];
+
+// client connection object constructors (used to store websocket and channel index information)
+function ClientConnection(ws, channelIndex) {
+    this.websocket = ws;
+    this.channelIndex = channelIndex;
+}
+
+// url of flask api (to send messages to slack)
+const slack_api_send_msg_url = "https://live-chat-api-ejiw.onrender.com/send-message";
+
+// WebSocket server setup (listen to port 2000)
+const wss = new WebSocket.Server({ port: 2000 });
+
+// when someone connects to the websocket server
+wss.on('connection', function connection(ws) {
+    // when the server receives a message
+    ws.onmessage = function (e) {
+        console.log("===========================Channel Status===========================");
+        for(let i = 0; i < channels.length; i++){
+            console.log(String(channels[i]) + ": " + String(channelOccupied[i]));
+        }
+        
+        const incomingMessage = e.data;
+        console.log("Message Received: " + incomingMessage);
+
+        // separates message from channelId (if it has one)
+        let [channelId, ...msgs] = incomingMessage.split(":");
+        console.log("Channel ID: " + String(channelId))
+
+        // locate the channel in the channels array
+        let channelIndex = channels.indexOf(channelId);
+
+        // put the message together
+        let msg = msgs.join("");
+        console.log("Message: " + String(msg));
+
+        // message was sent by client (if channel id is not available)
+        if (channelIndex === -1 && channelId !== helpDeskChannel) {
+            console.log("Message sent from a client");
+            
+            // check to see if they are connected
+            if (isConnected(ws)) {
+                console.log("Client is connected already");
+                
+                // find the channel 
+                channelIndex = findChannelIndex(ws);
+
+                // could not find the channel index
+                if (channelIndex === -1) return;
+
+                // store the id of the channel to send to the slack channel
+                channelId = channels[channelIndex];
+
+                // send message to slack
+                send_to_slack_api(channelId, msg);
+                console.log("Successfully sent to slack channel");
+
+            }else {
+                // not connected yet
+                attemptToConnect(ws);
+
+                // check to see if it was connected
+                if (isConnected(ws)) {
+                    // get client index
+                    let clientIndex = getClientIndex(ws);
+
+                    // retrieve client object
+                    let client = connectedClients[clientIndex];
+
+                    // send the message to channel id (through api)
+                    channelId = channels[client.channelIndex];
+
+                    // send message to slack
+                    send_to_slack_api(channelId, msg);
+
+                    // alert help desk that there is a person waiting to get a response
+                    let notificationMessage = `<!channel> We have a new chat in room: <%23${channelId}|>`;
+                    // `<@${helpDeskChannel}> We have a new chat in room: <@${channelId}>`
+
+                    send_to_slack_api(helpDeskChannel, notificationMessage);
+                }
+            }
+        } else {
+            // message was sent from slack
+            console.log("Message came from slack");
+            
+            // find the websocket and send the data to it
+            console.log("Connected Users: " + String(connectedClients.length));
+            for (let i = 0; i < connectedClients.length; i++) {
+                let client = connectedClients[i];
+                console.log("Client has channel: " + String(channels[client.channelIndex]));
+                if (channelId === channels[client.channelIndex]) {
+                    client.websocket.send(msg);
+                    console.log("Succesfully sent to client");
+                }
+            }
+        }
+    };
+
+    // when user disconnects from the chat server
+    ws.on('close', function () {
+        // console.log("user disconnected-setting channel occupied to false");
+        // channelOccupied[0] = false;
+
+        // check to see if is connected
+        if(isConnected(ws)){
+            let index = getClientIndex(ws);
+            if(index != -1){
+                // get channel id 
+                let channelIndex = findChannelIndex(ws);
+
+                // remove user from the list
+                connectedClients.splice(index, 1);
+                console.log("Connected user disconnected");
+
+                // attempt to connect the most recent waiting user
+                if(waitingSockets.length > 0){
+                    let waitingSocket = waitingSockets[0];
+                    let newClient = new ClientConnection(waitingSocket, channelIndex);
+                    connectedClients.push(newClient);
+                    console.log("waitint user connected");
+                    
+                    // splice the waiting list so that it moves up one
+                    waitingSockets.splice(0, 1);
+                    console.log("waiting list moved up");
+                }else{
+                    // update the status to false
+                    channelOccupied[channelIndex] = false; // N: I'm thinking that we don't update this so that we can replace it with someone waiting which prevents a random user that has a chance of taking its spot randomly
+                }
+
+            }
+        }else{
+            // person waiting disconnected
+            let index = waitingSockets.indexOf(ws);
+            if(index != -1){
+                waitingSockets.splice(index, 1);
+                console.log("Waiting user disconnected");
+            }
+        }
+    });
+});
+
+// perform api call to send a message to the channel with the passed in channel id
+const https = require('https');
+
+// Perform API call to send a message to the channel with the passed in channel id
+function send_to_slack_api(channelId, msg) {
+  // Create the full URL with query parameters
+  const fullUrl = `${slack_api_send_msg_url}?channelId=${channelId}&message=${msg}`;
+  console.log(`Full URL: ${fullUrl}`);
+  
+  // Parse the URL to extract the hostname and path
+  const url = new URL(fullUrl);
+
+  // Set up the options for the HTTPS request
+  const options = {
+    hostname: url.hostname,
+    path: url.pathname + url.search,
+    method: 'GET',
+  };
+
+  // Make the GET request to the API endpoint
+  const req = https.request(options, (res) => {
+    let data = '';
+
+    // A chunk of data has been received.
+    res.on('data', (chunk) => {
+      data += chunk;
+    });
+
+    // The whole response has been received.
+    res.on('end', () => {
+      if (res.statusCode === 200) {
+        console.log('Message Sent to channel: ' + String(channelId));
+        console.log(`Message content: ${msg}`);
+      } else {
+        console.error('Error:', res.statusCode, res.statusMessage);
+      }
+    });
+  });
+
+  req.on('error', (error) => {
+    console.error('Request failed:', error);
+  });
+
+  req.end();
+}
+
+
+
+// returns the status whether the websocket is connected or not
+function isConnected(ws) {
+    // console.log(connectedClients.length);
+    for (let i = 0; i < connectedClients.length; i++) {
+        let clientConnection = connectedClients[i];
+        // console.log(clientConnection.websocket);
+        if (ws === clientConnection.websocket) {
+            console.log("Socket is connected already");
+            return true;
+        }
+    }
+
+    console.log("Socket has not yet connected");
+    return false;
+}
+
+// returns status whether the websocket is waiting or not
+// function isWaiting(ws) {
+//     for (let i = 0; i < waitingSockets.length; i++) {
+//         let socket = waitingSockets[i];
+//         if (ws === socket.websocket) {
+//             console.log("Socket is waiting");
+//             return true;
+//         }
+//     }
+//     console.log("Socket is not waiting");
+//     return false;
+// }
+
+function attemptToConnect(ws) {
+    console.log("Attempting to connect client...");
+    for (let i = 0; i < channelOccupied.length; i++) {
+        // connect websocket
+        if (!channelOccupied[i]) {
+            // create a client connection object with ws and channel index
+            let clientConnection = new ClientConnection(ws, i);
+
+            // push to connected socket
+            connectedClients.push(clientConnection);
+
+            // update room status
+            channelOccupied[i] = true;
+
+            console.log("Successfully connected socket to channel");
+
+            // don't need to check to see if other channels are free if they found an available one
+            return;
+        }
+    }
+
+    // all channels are occupied so we put them in the waiting list
+    console.log("Socket pushed to waiting list");
+    waitingSockets.push(ws)
+}
+
+// returns the channel index that the websocket is currently occupying
+function findChannelIndex(ws) {
+    for (let i = 0; i < connectedClients.length; i++) {
+        let socket = connectedClients[i];
+        if (ws === socket.websocket) {
+            return socket.channelIndex;
+        }
+    }
+
+    // does not have channel index (impossible)
+    console.log("Channel Index not found");
+    return -1;
+}
+
+// takes in a websocket object to find the client object that is connected
+function getClientIndex(ws) {
+    for (let i = 0; i < connectedClients.length; i++) {
+        let client = connectedClients[i];
+        if (ws === client.websocket) {
+            return i;
+        }
+    }
+
+    // could not find
+    console.log("Could not find Client Index");
+    return -1;
+}
 //End of Live Support code
 
 
