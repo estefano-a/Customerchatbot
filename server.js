@@ -696,10 +696,10 @@ function getClientIndex(ws) {
             break;
           case "live-support-session":
             //For the submit button to continue getting messages to slack
-            const { rebeccaLiveMessage } = body;
+            const { messagesFromRebecca } = body;
             try {
-              const text = rebeccaLiveMessage;
-
+              const text = messagesFromRebecca;
+              
               await slackApp.client.chat.postMessage({
                 token: process.env.SLACK_BOT_TOKEN,
                 channel: process.env.SLACK_CHANNEL,
