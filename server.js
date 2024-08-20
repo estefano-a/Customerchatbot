@@ -9,7 +9,7 @@ const https = require('https');
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const port = process.env.PORT || 10000;
 
-
+let wss; 
 const slackApp = new App({
   signingSecret: process.env.SLACK_SIGNING_SECRET,
   token: process.env.SLACK_BOT_TOKEN,
@@ -339,7 +339,7 @@ http
 // Set up WebSocket server
 
             try {
-  const wss = new WebSocket.Server({ port: 443 });
+  wss = new WebSocket.Server({ port: 443 });
 } catch (error) {
   console.error('WebSocket server setup failed:', error);
 }
