@@ -329,15 +329,20 @@ http
             // Set the flag to true to disable AI responses and switch to live support
             
             const { messages } = body;
-            console.log(`${message}`);
+            console.log(`${messages}`);
             isLiveSupportMode = true;
             res.end(JSON.stringify({ status: "WebSocket session started" }));
 
             //Code to connect Rebecca to live support - Aug 15, 2024
 // Set up WebSocket server
 
-const wss = new WebSocket.Server({ port:2001 });
-const connectedClients = [];
+            try {
+  const wss = new WebSocket.Server({ port: 2001 });
+} catch (error) {
+  console.error('WebSocket server setup failed:', error);
+}
+
+let connectedClients = []; 
 const slackChannels = ['C07GQG61SUF', 'C07GQGFGYNB', 'C07HHNWQA1F', 'C07H26MKCG5', 'C07H53CELUS']; // Rebecca Support Slack channels
 
 // Client connection object constructor
