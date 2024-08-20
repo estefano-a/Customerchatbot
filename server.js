@@ -427,8 +427,6 @@ function ClientConnection(ws, channelIndex) {
 // url of flask api (to send messages to slack)
 const slack_api_send_msg_url = "https://live-chat-api-ejiw.onrender.com/send-message";
 
-// WebSocket server setup (listen to port 2000)
-const wss = new WebSocket.Server({ port: 2000 });
 
 // when someone connects to the websocket server
 wss.on('connection', function connection(ws) {
