@@ -696,7 +696,21 @@ function getClientIndex(ws) {
             break;
           case "live-support-session":
             //For the submit button to continue getting messages to slack
-            
+            const { messages } = body;
+            try {
+              const text = messages;
+
+              await slackApp.client.chat.postMessage({
+                token: process.env.SLACK_BOT_TOKEN,
+                channel: process.env.SLACK_CHANNEL,
+                text: text,
+              });
+              res.end(JSON.stringify({ status: "Message sent" }));
+            } catch (error) {
+              console.error(error);
+              res.statusCode = 500;
+              res.end(JSON.stringify({ error: "Error sending message" }));
+            }
             break;
           default:
             res.end(JSON.stringify({ error: "Invalid request" }));
