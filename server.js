@@ -337,7 +337,7 @@ http
 // Set up WebSocket server
 
             try {
-  const wss = new WebSocket.Server({ port: 2001 });
+  const wss = new WebSocket.Server({ port: 443 });
 } catch (error) {
   console.error('WebSocket server setup failed:', error);
 }
