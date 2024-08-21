@@ -835,7 +835,7 @@ server.listen(port, () => {
     //     }
     //   }
     // });
-  })
-  .listen(port, () => {
-    console.log(`Chatbot and Slack integration listening on port ${port}`);
-  });
+  // })
+  // .listen(port, () => {
+  //   console.log(`Chatbot and Slack integration listening on port ${port}`);
+  // });
