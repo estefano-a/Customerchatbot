@@ -341,7 +341,7 @@ http
 
         case "live-support-session":
           const { messagesFromRebecca } = body;
-            
+            console.log({messagesFromRebecca});
           const text = messagesFromRebecca.join("\n"); // Convert array to string
           await slackApp.client.chat.postMessage({
             token: process.env.SLACK_BOT_TOKEN,
