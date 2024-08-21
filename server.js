@@ -559,48 +559,48 @@ wss.on('connection', function connection(ws) {
 });
 });
 
-// Perform API call to send a message to the channel with the passed in channel id
-function send_to_slack_api(channelId, msg) {
-  // Create the full URL with query parameters
-  const fullUrl = `${slack_api_send_msg_url}?channelId=${channelId}&message=${msg}`;
-  console.log(`Full URL: ${fullUrl}`);
+// // Perform API call to send a message to the channel with the passed in channel id
+// function send_to_slack_api(channelId, msg) {
+//   // Create the full URL with query parameters
+//   const fullUrl = `${slack_api_send_msg_url}?channelId=${channelId}&message=${msg}`;
+//   console.log(`Full URL: ${fullUrl}`);
   
-  // Parse the URL to extract the hostname and path
-  const url = new URL(fullUrl);
+//   // Parse the URL to extract the hostname and path
+//   const url = new URL(fullUrl);
 
-  // Set up the options for the HTTPS request
-  const options = {
-    hostname: url.hostname,
-    path: url.pathname + url.search,
-    method: 'GET',
-  };
+//   // Set up the options for the HTTPS request
+//   const options = {
+//     hostname: url.hostname,
+//     path: url.pathname + url.search,
+//     method: 'GET',
+//   };
 
-  // Make the GET request to the API endpoint
-  const req = https.request(options, (res) => {
-    let data = '';
+//   // Make the GET request to the API endpoint
+//   const req = https.request(options, (res) => {
+//     let data = '';
 
-    // A chunk of data has been received.
-    res.on('data', (chunk) => {
-      data += chunk;
-    });
+//     // A chunk of data has been received.
+//     res.on('data', (chunk) => {
+//       data += chunk;
+//     });
 
-    // The whole response has been received.
-    res.on('end', () => {
-      if (res.statusCode === 200) {
-        console.log('Message Sent to channel: ' + String(channelId));
-        console.log(`Message content: ${msg}`);
-      } else {
-        console.error('Error:', res.statusCode, res.statusMessage);
-      }
-    });
-  });
+//     // The whole response has been received.
+//     res.on('end', () => {
+//       if (res.statusCode === 200) {
+//         console.log('Message Sent to channel: ' + String(channelId));
+//         console.log(`Message content: ${msg}`);
+//       } else {
+//         console.error('Error:', res.statusCode, res.statusMessage);
+//       }
+//     });
+//   });
 
-  req.on('error', (error) => {
-    console.error('Request failed:', error);
-  });
+//   req.on('error', (error) => {
+//     console.error('Request failed:', error);
+//   });
 
-  req.end();
-}
+//   req.end();
+// }
 
 
 
@@ -697,6 +697,7 @@ function getClientIndex(ws) {
           case "live-support-session":
             //For the submit button to continue getting messages to slack
             const { messagesFromRebecca } = body;
+            console.log(`${messagesFromRebecca}`);
             try {
               const text = messagesFromRebecca;
               
