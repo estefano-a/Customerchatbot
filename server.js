@@ -148,6 +148,14 @@ async function getLatestMessage(name) {
   return result.length > 0 ? result[0].messageSent : null;
 }
 
+let connectedClients = []; 
+const slackChannels = ['C07GQG61SUF', 'C07GQGFGYNB', 'C07HHNWQA1F', 'C07H26MKCG5', 'C07H53CELUS']; // Your Slack channels
+
+// Client connection object constructor
+function ClientConnection(ws, channelIndex) {
+  this.websocket = ws;
+  this.channelIndex = channelIndex;
+}
 
 
 http
@@ -327,11 +335,105 @@ http
             });
             res.end(JSON.stringify(sessionMessages));
             break;
-            case "start-websocket-session":
+           // case "start-websocket-session":
+
+
+
+        case "live-support-session":
+          const { messagesFromRebecca } = body;
+          const text = messagesFromRebecca.join("\n"); // Convert array to string
+          await slackApp.client.chat.postMessage({
+            token: process.env.SLACK_BOT_TOKEN,
+            channel: process.env.SLACK_CHANNEL,
+            text: text,
+          });
+          res.end(JSON.stringify({ status: "Message sent" }));
+          break;
+
+        default:
+          res.end(JSON.stringify({ error: "Invalid request" }));
+          break;
+      }
+    } catch (error) {
+      console.error("Error handling request:", error);
+      res.writeHead(500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "Internal Server Error" }));
+    }
+  });
+});
+
+// Set up WebSocket server
+wss = new WebSocket.Server({ server });
+
+wss.on('connection', function connection(ws) {
+  console.log('WebSocket client connected');
+
+  ws.on('message', async function incoming(message) {
+    console.log('Received:', message);
+
+    // Parse the message from the client
+    let [channelId, ...msgParts] = message.split(":");
+    let msg = msgParts.join(":").trim();
+    let channelIndex = slackChannels.indexOf(channelId);
+
+    if (channelIndex === -1) {
+      console.log("Message does not match any Slack channel ID. Ignoring.");
+      return;
+    }
+
+    // Store the client connection
+    connectedClients.push(new ClientConnection(ws, channelIndex));
+
+    // Send the message to the corresponding Slack channel
+    await sendMessageToSlack(channelId, msg);
+  });
+
+  ws.on('close', function () {
+    console.log('WebSocket client disconnected');
+    connectedClients = connectedClients.filter(client => client.websocket !== ws);
+  });
+});
+
+// Function to send a message to a Slack channel
+async function sendMessageToSlack(channelId, message) {
+  try {
+    await slackApp.client.chat.postMessage({
+      token: process.env.SLACK_BOT_TOKEN,
+      channel: channelId,
+      text: message,
+    });
+    console.log('Message sent to Slack:', message);
+  } catch (error) {
+    console.error('Error sending message to Slack:', error);
+  }
+}
+
+// Listen for Slack messages and forward them to the appropriate WebSocket client
+slackApp.message(async ({ message, say }) => {
+  const channelId = message.channel;
+  const text = message.text;
+
+  const client = connectedClients.find(client => slackChannels[client.channelIndex] === channelId);
+  if (client) {
+    client.websocket.send(text);
+    console.log('Message forwarded to WebSocket client:', text);
+  }
+});
+
+server.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
+
+
+
+
+
+
+            
             // Set the flag to true to disable AI responses and switch to live support
             
-            const { messages } = body;
-            console.log(`${messages}`);
+            // const { messages } = body;
+            // console.log(`${messages}`);
 
 
 
@@ -343,22 +445,22 @@ http
             //Code to connect Rebecca to live support - Aug 15, 2024
 // Set up WebSocket server
 
-            try {
-  wss = new WebSocket.Server({ port: 443 });
-              console.log("WebSocket connection successful");
-} catch (error) {
-  console.error('WebSocket server setup failed:', error);
-}
+//             try {
+//   wss = new WebSocket.Server({ port: 443 });
+//               console.log("WebSocket connection successful");
+// } catch (error) {
+//   console.error('WebSocket server setup failed:', error);
+// }
 
 // let connectedClients = []; 
 // const slackChannels = ['C07GQG61SUF', 'C07GQGFGYNB', 'C07HHNWQA1F', 'C07H26MKCG5', 'C07H53CELUS']; // Rebecca Support Slack channels
 
 // // Client connection object constructor
-function ClientConnection(ws, channelIndex) {
-  this.websocket = ws;
-  this.channelIndex = channelIndex;
-  console.log(`${this.channelIndex} Erin`);
-}
+// function ClientConnection(ws, channelIndex) {
+//   this.websocket = ws;
+//   this.channelIndex = channelIndex;
+//   console.log(`${this.channelIndex} Erin`);
+// }
 
 // Handle WebSocket connections
 // wss.on('connection', function connection(ws) {
