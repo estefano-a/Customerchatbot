@@ -166,6 +166,9 @@ http
     });
     req.on("end", async () => {
       try {
+        if (!body) {
+        throw new Error("Empty request body");
+      }
         body = JSON.parse(body);
         res.writeHead(200, {
           "Content-Type": "application/json",
