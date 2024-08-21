@@ -341,6 +341,7 @@ http
 
         case "live-support-session":
           const { messagesFromRebecca } = body;
+            
           const text = messagesFromRebecca.join("\n"); // Convert array to string
           await slackApp.client.chat.postMessage({
             token: process.env.SLACK_BOT_TOKEN,
@@ -352,63 +353,6 @@ http
 
         
 
-// Set up WebSocket server
-wss = new WebSocket.Server({ port: 443 });
-
-wss.on('connection', function connection(ws) {
-  console.log('WebSocket client connected');
-
-  ws.on('message', async function incoming(message) {
-    console.log('Received:', message);
-
-    // Parse the message from the client
-    let [channelId, ...msgParts] = message.split(":");
-    let msg = msgParts.join(":").trim();
-    let channelIndex = slackChannels.indexOf(channelId);
-
-    if (channelIndex === -1) {
-      console.log("Message does not match any Slack channel ID. Ignoring.");
-      return;
-    }
-
-    // Store the client connection
-    connectedClients.push(new ClientConnection(ws, channelIndex));
-
-    // Send the message to the corresponding Slack channel
-    await sendMessageToSlack(channelId, msg);
-  });
-
-  ws.on('close', function () {
-    console.log('WebSocket client disconnected');
-    connectedClients = connectedClients.filter(client => client.websocket !== ws);
-  });
-});
-
-// Function to send a message to a Slack channel
-async function sendMessageToSlack(channelId, message) {
-  try {
-    await slackApp.client.chat.postMessage({
-      token: process.env.SLACK_BOT_TOKEN,
-      channel: channelId,
-      text: message,
-    });
-    console.log('Message sent to Slack:', message);
-  } catch (error) {
-    console.error('Error sending message to Slack:', error);
-  }
-}
-
-// Listen for Slack messages and forward them to the appropriate WebSocket client
-slackApp.message(async ({ message, say }) => {
-  const channelId = message.channel;
-  const text = message.text;
-
-  const client = connectedClients.find(client => slackChannels[client.channelIndex] === channelId);
-  if (client) {
-    client.websocket.send(text);
-    console.log('Message forwarded to WebSocket client:', text);
-  }
-});
 
 
 
@@ -827,3 +771,67 @@ slackApp.message(async ({ message, say }) => {
   .listen(port, () => {
     console.log(`Chatbot and Slack integration listening on port ${port}`);
   });
+
+
+
+
+
+
+// Set up WebSocket server
+wss = new WebSocket.Server({ port: 443 });
+
+wss.on('connection', function connection(ws) {
+  console.log('WebSocket client connected');
+
+  ws.on('message', async function incoming(message) {
+    console.log('Received:', message);
+
+    // Parse the message from the client
+    let [channelId, ...msgParts] = message.split(":");
+    let msg = msgParts.join(":").trim();
+    let channelIndex = slackChannels.indexOf(channelId);
+
+    if (channelIndex === -1) {
+      console.log("Message does not match any Slack channel ID. Ignoring.");
+      return;
+    }
+
+    // Store the client connection
+    connectedClients.push(new ClientConnection(ws, channelIndex));
+
+    // Send the message to the corresponding Slack channel
+    await sendMessageToSlack(channelId, msg);
+  });
+
+  ws.on('close', function () {
+    console.log('WebSocket client disconnected');
+    connectedClients = connectedClients.filter(client => client.websocket !== ws);
+  });
+});
+
+// Function to send a message to a Slack channel
+async function sendMessageToSlack(channelId, message) {
+  try {
+    await slackApp.client.chat.postMessage({
+      token: process.env.SLACK_BOT_TOKEN,
+      channel: channelId,
+      text: message,
+    });
+    console.log('Message sent to Slack:', message);
+  } catch (error) {
+    console.error('Error sending message to Slack:', error);
+  }
+}
+
+// Listen for Slack messages and forward them to the appropriate WebSocket client
+slackApp.message(async ({ message, say }) => {
+  const channelId = message.channel;
+  const text = message.text;
+
+  const client = connectedClients.find(client => slackChannels[client.channelIndex] === channelId);
+  if (client) {
+    client.websocket.send(text);
+    console.log('Message forwarded to WebSocket client:', text);
+  }
+});
+
