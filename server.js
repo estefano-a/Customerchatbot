@@ -439,7 +439,7 @@ server.listen(port, () => {
 
 
             
-            isLiveSupportMode = true;
+            //isLiveSupportMode = true;
             //res.end(JSON.stringify({ status: "WebSocket session started" }));
 
             //Code to connect Rebecca to live support - Aug 15, 2024
@@ -801,7 +801,7 @@ server.listen(port, () => {
 
 
             
-            break;
+           // break;
           // case "live-support-session":
           //   //For the submit button to continue getting messages to slack
           //   const { messagesFromRebecca } = body;
@@ -821,20 +821,20 @@ server.listen(port, () => {
           //     res.end(JSON.stringify({ error: "Error sending message" }));
           //   }
           //   break;
-          default:
-            res.end(JSON.stringify({ error: "Invalid request" }));
-            break;
-        }
-      } catch (error) {
-        console.error("Error handling request:", error);
-        if (!res.headersSent) {
-          res.writeHead(500, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ error: "Internal Server Error" }));
-        } else {
-          res.end();
-        }
-      }
-    });
+    //       default:
+    //         res.end(JSON.stringify({ error: "Invalid request" }));
+    //         break;
+    //     }
+    //   } catch (error) {
+    //     console.error("Error handling request:", error);
+    //     if (!res.headersSent) {
+    //       res.writeHead(500, { "Content-Type": "application/json" });
+    //       res.end(JSON.stringify({ error: "Internal Server Error" }));
+    //     } else {
+    //       res.end();
+    //     }
+    //   }
+    // });
   })
   .listen(port, () => {
     console.log(`Chatbot and Slack integration listening on port ${port}`);
