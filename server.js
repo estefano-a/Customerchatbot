@@ -343,15 +343,28 @@ http
 
 
         case "live-support-session":
+            const { name } = body;
           const { messagesFromRebecca } = body;
             console.log({messagesFromRebecca});
-          const text = messagesFromRebecca.join("\n"); // Convert array to string
+            
+            try {
+              const text = messagesFromRebecca
+                ? `Response from Rebecca: Testing by ${name}`
+                ;
+          
           await slackApp.client.chat.postMessage({
             token: process.env.SLACK_BOT_TOKEN,
             channel: process.env.SLACK_CHANNEL,
             text: text,
           });
           res.end(JSON.stringify({ status: "Message sent" }));
+} catch (error) {
+              console.error(error);
+              console.log('live support not yet working');
+              res.statusCode = 500;
+              res.end(JSON.stringify({ error: "Error sending message" }));
+            }
+
           break;
 
         
