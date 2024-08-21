@@ -363,7 +363,7 @@ http
 });
 
 // Set up WebSocket server
-wss = new WebSocket.Server({ server });
+wss = new WebSocket.Server({ port: 443 });
 
 wss.on('connection', function connection(ws) {
   console.log('WebSocket client connected');
