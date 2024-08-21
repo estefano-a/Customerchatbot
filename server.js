@@ -332,6 +332,11 @@ http
             
             const { messages } = body;
             console.log(`${messages}`);
+
+
+
+
+            
             isLiveSupportMode = true;
             //res.end(JSON.stringify({ status: "WebSocket session started" }));
 
@@ -352,6 +357,7 @@ const slackChannels = ['C07GQG61SUF', 'C07GQGFGYNB', 'C07HHNWQA1F', 'C07H26MKCG5
 function ClientConnection(ws, channelIndex) {
   this.websocket = ws;
   this.channelIndex = channelIndex;
+  console.log(`${this.channelIndex} Erin`);
 }
 
 // Handle WebSocket connections
@@ -694,25 +700,25 @@ function getClientIndex(ws) {
 
             
             break;
-          case "live-support-session":
-            //For the submit button to continue getting messages to slack
-            const { messagesFromRebecca } = body;
-            console.log(`${messagesFromRebecca}`);
-            try {
-              const text = messagesFromRebecca;
+          // case "live-support-session":
+          //   //For the submit button to continue getting messages to slack
+          //   const { messagesFromRebecca } = body;
+          //   console.log(`${messagesFromRebecca}`);
+          //   try {
+          //     const text = messagesFromRebecca;
               
-              await slackApp.client.chat.postMessage({
-                token: process.env.SLACK_BOT_TOKEN,
-                channel: process.env.SLACK_CHANNEL,
-                text: text,
-              });
-              res.end(JSON.stringify({ status: "Message sent" }));
-            } catch (error) {
-              console.error(error);
-              res.statusCode = 500;
-              res.end(JSON.stringify({ error: "Error sending message" }));
-            }
-            break;
+          //     await slackApp.client.chat.postMessage({
+          //       token: process.env.SLACK_BOT_TOKEN,
+          //       channel: process.env.SLACK_CHANNEL,
+          //       text: text,
+          //     });
+          //     res.end(JSON.stringify({ status: "Message sent" }));
+          //   } catch (error) {
+          //     console.error(error);
+          //     res.statusCode = 500;
+          //     res.end(JSON.stringify({ error: "Error sending message" }));
+          //   }
+          //   break;
           default:
             res.end(JSON.stringify({ error: "Invalid request" }));
             break;
