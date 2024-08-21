@@ -350,7 +350,8 @@ http
             try {
               const text = messagesFromRebecca
                 ? `Response from Rebecca: Testing by ${name}`
-                ;
+                : 'did not get name from object'; 
+
           
           await slackApp.client.chat.postMessage({
             token: process.env.SLACK_BOT_TOKEN,
