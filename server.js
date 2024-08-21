@@ -350,17 +350,7 @@ http
           res.end(JSON.stringify({ status: "Message sent" }));
           break;
 
-        default:
-          res.end(JSON.stringify({ error: "Invalid request" }));
-          break;
-      }
-    } catch (error) {
-      console.error("Error handling request:", error);
-      res.writeHead(500, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ error: "Internal Server Error" }));
-    }
-  });
-});
+        
 
 // Set up WebSocket server
 wss = new WebSocket.Server({ port: 443 });
@@ -420,9 +410,7 @@ slackApp.message(async ({ message, say }) => {
   }
 });
 
-server.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
-});
+
 
 
 
@@ -821,21 +809,21 @@ server.listen(port, () => {
           //     res.end(JSON.stringify({ error: "Error sending message" }));
           //   }
           //   break;
-    //       default:
-    //         res.end(JSON.stringify({ error: "Invalid request" }));
-    //         break;
-    //     }
-    //   } catch (error) {
-    //     console.error("Error handling request:", error);
-    //     if (!res.headersSent) {
-    //       res.writeHead(500, { "Content-Type": "application/json" });
-    //       res.end(JSON.stringify({ error: "Internal Server Error" }));
-    //     } else {
-    //       res.end();
-    //     }
-    //   }
-    // });
-  // })
-  // .listen(port, () => {
-  //   console.log(`Chatbot and Slack integration listening on port ${port}`);
-  // });
+          default:
+            res.end(JSON.stringify({ error: "Invalid request" }));
+            break;
+        }
+      } catch (error) {
+        console.error("Error handling request:", error);
+        if (!res.headersSent) {
+          res.writeHead(500, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ error: "Internal Server Error" }));
+        } else {
+          res.end();
+        }
+      }
+    });
+  })
+  .listen(port, () => {
+    console.log(`Chatbot and Slack integration listening on port ${port}`);
+  });
