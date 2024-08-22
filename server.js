@@ -141,76 +141,7 @@ async function getLatestMessage(name) {
   return result.length > 0 ? result[0].messageSent : null;
 }
 
-//Code to connect Rebecca to live support - Aug 15, 2024
-// Set up WebSocket server
-//Already connected to websocket in squarespace code
-//const wss = new WebSocket.Server({ port: 2001 }); // WebSocket listens on port 2001
-const connectedClients = [];
-const slackChannels = ['C05UEQHN7RU', 'C05UME17ZV0', 'C05V03CCQN5', 'C05UME2PU4S', 'C05UMB84Y0K']; // Example Slack channels
 
-// Client connection object constructor
-function ClientConnection(ws, channelIndex) {
-  this.websocket = ws;
-  this.channelIndex = channelIndex;
-}
-
-// Handle WebSocket connections
-wss.on('connection', function connection(ws) {
-  ws.on('message', async function incoming(message) {
-    console.log('received:', message);
-
-    // Parse the message from the client
-    let [channelId, ...msgParts] = message.split(":");
-    let msg = msgParts.join(":").trim();
-    let channelIndex = slackChannels.indexOf(channelId);
-
-    if (channelIndex === -1) {
-      // Handle the case where the message does not specify a channel ID
-      console.log("Message does not match any Slack channel ID. Ignoring.");
-      return;
-    }
-
-    // Store the client connection
-    connectedClients.push(new ClientConnection(ws, channelIndex));
-
-    // Send the message to the corresponding Slack channel
-    await sendMessageToSlack(channelId, msg);
-  });
-
-  // Handle WebSocket closure
-  ws.on('close', function () {
-    console.log('Client disconnected');
-    // Remove the client from the connectedClients array
-    connectedClients = connectedClients.filter(client => client.websocket !== ws);
-  });
-});
-
-// Send message to Slack channel
-async function sendMessageToSlack(channelId, message) {
-  try {
-    await slackApp.client.chat.postMessage({
-      token: process.env.SLACK_BOT_TOKEN,
-      channel: channelId,
-      text: message,
-    });
-    console.log('Message sent to Slack:', message);
-  } catch (error) {
-    console.error('Error sending message to Slack:', error);
-  }
-}
-
-// Listen for Slack messages and forward them to the appropriate WebSocket client
-slackApp.message(async ({ message, say }) => {
-  const channelId = message.channel;
-  const text = message.text;
-
-  // Find the corresponding WebSocket client
-  const client = connectedClients.find(client => slackChannels[client.channelIndex] === channelId);
-  if (client) {
-    client.websocket.send(text);
-    console.log('Message forwarded to WebSocket client:', text);
-  }
-});
 
 http
   .createServer(async function (req, res) {
@@ -390,10 +321,7 @@ http
             });
             res.end(JSON.stringify(sessionMessages));
             break;
-            case "start-websocket-session":
-            // You can implement any WebSocket-related initialization logic here if needed
-            res.end(JSON.stringify({ status: "WebSocket session started" }));
-            break;
+            
           default:
             res.end(JSON.stringify({ error: "Invalid request" }));
             break;
