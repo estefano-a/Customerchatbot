@@ -3,7 +3,6 @@ const http = require("http");
 const { MongoClient } = require("mongodb");
 const { OpenAI } = require("openai");
 const { App } = require("@slack/bolt");
-const WebSocket = require('ws');
 const fs = require("fs");
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const port = process.env.PORT || 10000;
@@ -23,15 +22,7 @@ const namesAndEmailsCollection = "namesAndEmails";
 const messagesCollection = "messages";
 client.connect();
 
-// Flag to control AI vs. Live Support mode
-//let isLiveSupportMode = false;
-
 async function callChatBot(str) {
-  // if (isLiveSupportMode) {
-  //   console.log("AI responses are disabled. Currently in live support mode.");
-  //   return "Live support is active. Please wait for a response.";
-  // }
-
   try {
     const run = await openai.beta.threads.createAndRun({
       assistant_id: process.env.OPENAI_ASSISTANT_ID,
@@ -59,7 +50,11 @@ async function callChatBot(str) {
         const response = threadMessages.data[0].content[0].text.value;
         const cleanedResponse = response.replace(/【\d+:\d+†source】/g, "");
         
-        return cleanedResponse;
+        // Format hyperlinks for Markdown
+        const formattedResponse = cleanedResponse.replace(/http(s)?:\/\/\S+/g, url => `[${url}](${url})`);
+
+        console.log(formattedResponse);
+        return formattedResponse;
       }
     }
   } catch (error) {
@@ -146,7 +141,76 @@ async function getLatestMessage(name) {
   return result.length > 0 ? result[0].messageSent : null;
 }
 
+//Code to connect Rebecca to live support - Aug 15, 2024
+// Set up WebSocket server
+//Already connected to websocket in squarespace code
+//const wss = new WebSocket.Server({ port: 2001 }); // WebSocket listens on port 2001
+const connectedClients = [];
+const slackChannels = ['C05UEQHN7RU', 'C05UME17ZV0', 'C05V03CCQN5', 'C05UME2PU4S', 'C05UMB84Y0K']; // Example Slack channels
 
+// Client connection object constructor
+function ClientConnection(ws, channelIndex) {
+  this.websocket = ws;
+  this.channelIndex = channelIndex;
+}
+
+// Handle WebSocket connections
+wss.on('connection', function connection(ws) {
+  ws.on('message', async function incoming(message) {
+    console.log('received:', message);
+
+    // Parse the message from the client
+    let [channelId, ...msgParts] = message.split(":");
+    let msg = msgParts.join(":").trim();
+    let channelIndex = slackChannels.indexOf(channelId);
+
+    if (channelIndex === -1) {
+      // Handle the case where the message does not specify a channel ID
+      console.log("Message does not match any Slack channel ID. Ignoring.");
+      return;
+    }
+
+    // Store the client connection
+    connectedClients.push(new ClientConnection(ws, channelIndex));
+
+    // Send the message to the corresponding Slack channel
+    await sendMessageToSlack(channelId, msg);
+  });
+
+  // Handle WebSocket closure
+  ws.on('close', function () {
+    console.log('Client disconnected');
+    // Remove the client from the connectedClients array
+    connectedClients = connectedClients.filter(client => client.websocket !== ws);
+  });
+});
+
+// Send message to Slack channel
+async function sendMessageToSlack(channelId, message) {
+  try {
+    await slackApp.client.chat.postMessage({
+      token: process.env.SLACK_BOT_TOKEN,
+      channel: channelId,
+      text: message,
+    });
+    console.log('Message sent to Slack:', message);
+  } catch (error) {
+    console.error('Error sending message to Slack:', error);
+  }
+}
+
+// Listen for Slack messages and forward them to the appropriate WebSocket client
+slackApp.message(async ({ message, say }) => {
+  const channelId = message.channel;
+  const text = message.text;
+
+  // Find the corresponding WebSocket client
+  const client = connectedClients.find(client => slackChannels[client.channelIndex] === channelId);
+  if (client) {
+    client.websocket.send(text);
+    console.log('Message forwarded to WebSocket client:', text);
+  }
+});
 
 http
   .createServer(async function (req, res) {
@@ -155,7 +219,7 @@ http
       body += chunk.toString();
     });
     req.on("end", async () => {
-        try {
+      try {
         body = JSON.parse(body);
         res.writeHead(200, {
           "Content-Type": "application/json",
@@ -176,6 +240,7 @@ http
             }
 
             try {
+              // const latestMessage = await getLatestMessage(body.name);
               const text = latestMessage
                 ? `${feedbackText}\nLatest response from Rebecca: ${latestMessage}`
                 : feedbackText;
@@ -325,16 +390,15 @@ http
             });
             res.end(JSON.stringify(sessionMessages));
             break;
-          
-            // Set the flag to true to disable AI responses and switch to live support
-           
-            //isLiveSupportMode = true;
-          
+            case "start-websocket-session":
+            // You can implement any WebSocket-related initialization logic here if needed
+            res.end(JSON.stringify({ status: "WebSocket session started" }));
+            break;
           default:
             res.end(JSON.stringify({ error: "Invalid request" }));
             break;
         }
-    }catch (error) {
+      } catch (error) {
         console.error("Error handling request:", error);
         if (!res.headersSent) {
           res.writeHead(500, { "Content-Type": "application/json" });
@@ -345,9 +409,6 @@ http
       }
     });
   })
-  
   .listen(port, () => {
     console.log(`Chatbot and Slack integration listening on port ${port}`);
   });
-
-
