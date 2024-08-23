@@ -68,19 +68,19 @@ function currentTime() {
   return d.toString();
 }
 
-async function obtainSession(name) {
-  const result = await client
-    .db(chatDatabase)
-    .collection(namesAndEmailsCollection)
-    .findOne({
-      username: name,
-    });
-  if (!result) {
-    console.error("No user found with the username:", name);
-    return null; // or handle the absence of the user appropriately
-  }
-  return parseInt(result.sessionNumber);
-}
+// async function obtainSession(name) {
+//   const result = await client
+//     .db(chatDatabase)
+//     .collection(namesAndEmailsCollection)
+//     .findOne({
+//       username: name,
+//     });
+//   if (!result) {
+//     console.error("No user found with the username:", name);
+//     return null; // or handle the absence of the user appropriately
+//   }
+//   return parseInt(result.sessionNumber);
+// }
 
 function updateStatus(name, status) {
   client
@@ -105,21 +105,21 @@ async function addNameAndEmail(name, email) {
 
 async function addMessage(name, message, recipient) {
   if (name == "customerRep" || name == "chat-bot") {
-    const session = await obtainSession(recipient);
+   // const session = await obtainSession(recipient);
     client.db(chatDatabase).collection(messagesCollection).insertOne({
       sender: name,
       reciever: recipient,
       time: currentTime(),
-      session: session,
+      //session: session,
       messageSent: message,
     });
   } else {
-    const session = await obtainSession(name);
+   // const session = await obtainSession(name);
     client.db(chatDatabase).collection(messagesCollection).insertOne({
       sender: name,
       reciever: recipient,
       time: currentTime(),
-      session: session,
+      //session: session,
       messageSent: message,
     });
   }
@@ -215,10 +215,10 @@ http
             await addMessage(body.name, body.message, body.recipient);
             res.end(JSON.stringify({ status: "success" }));
             break;
-          case "getSession":
-            const session = await obtainSession(body.name);
-            res.end(session.toString());
-            break;
+          // case "getSession":
+          //   const session = await obtainSession(body.name);
+          //   res.end(session.toString());
+          //   break;
           case "callChatBot":
             await addMessage(body.name, body.message, "chat-bot");
             const response = await callChatBot(body.message);
