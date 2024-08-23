@@ -56,6 +56,7 @@ async function callChatBot(str) {
           throw new Error("Response structure not as expected.");
         }
       }
+console.log("Current result:", result);
 
     } while (result.status !== "failed");
 
