@@ -33,35 +33,41 @@ async function callChatBot(str) {
 
     console.log("run status: ", run.status);
 
-    while (
-      (await openai.beta.threads.runs.retrieve(run.thread_id, run.id).status) !=
-      "failed"
-    ) {
-      const result = await openai.beta.threads.runs.retrieve(
-        run.thread_id,
-        run.id,
-      );
+    let result;
+    do {
+      // Adding a delay to prevent hitting rate limits
+      await new Promise(resolve => setTimeout(resolve, 2000)); 
 
-      if (result.status == "completed") {
-        const threadMessages = await openai.beta.threads.messages.list(
-          run.thread_id,
-        );
+      result = await openai.beta.threads.runs.retrieve(run.thread_id, run.id);
 
-        const response = threadMessages.data[0].content[0].text.value;
-        const cleanedResponse = response.replace(/【\d+:\d+†source】/g, "");
-        
-        // Format hyperlinks for Markdown
-        const formattedResponse = cleanedResponse.replace(/http(s)?:\/\/\S+/g, url => `[${url}](${url})`);
+      if (result.status === "completed") {
+        const threadMessages = await openai.beta.threads.messages.list(run.thread_id);
+        const response = threadMessages.data[0]?.content[0]?.text?.value;
 
-        console.log(formattedResponse);
-        return formattedResponse;
+        if (response) {
+          const cleanedResponse = response.replace(/【\d+:\d+†source】/g, "");
+
+          // Format hyperlinks for Markdown
+          const formattedResponse = cleanedResponse.replace(/http(s)?:\/\/\S+/g, url => `[${url}](${url})`);
+
+          console.log(formattedResponse);
+          return formattedResponse;
+        } else {
+          throw new Error("Response structure not as expected.");
+        }
       }
-    }
+
+    } while (result.status !== "failed");
+
+    console.error("The process failed.");
+    return "";
+    
   } catch (error) {
     console.error("An error occurred:", error);
     return "";
   }
 }
+
 
 function currentTime() {
   let d = new Date();
