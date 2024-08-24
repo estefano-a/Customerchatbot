@@ -33,61 +33,54 @@ async function callChatBot(str) {
 
     console.log("run status: ", run.status);
 
-    let result;
-    do {
-      // Adding a delay to prevent hitting rate limits
-      await new Promise(resolve => setTimeout(resolve, 2000)); 
+    while (
+      (await openai.beta.threads.runs.retrieve(run.thread_id, run.id).status) !=
+      "failed"
+    ) {
+      const result = await openai.beta.threads.runs.retrieve(
+        run.thread_id,
+        run.id,
+      );
 
-      result = await openai.beta.threads.runs.retrieve(run.thread_id, run.id);
+      if (result.status == "completed") {
+        const threadMessages = await openai.beta.threads.messages.list(
+          run.thread_id,
+        );
 
-      if (result.status === "completed") {
-        const threadMessages = await openai.beta.threads.messages.list(run.thread_id);
-        const response = threadMessages.data[0]?.content[0]?.text?.value;
+        const response = threadMessages.data[0].content[0].text.value;
+        const cleanedResponse = response.replace(/【\d+:\d+†source】/g, "");
+        
+        // Format hyperlinks for Markdown
+        const formattedResponse = cleanedResponse.replace(/http(s)?:\/\/\S+/g, url => `[${url}](${url})`);
 
-        if (response) {
-          const cleanedResponse = response.replace(/【\d+:\d+†source】/g, "");
-
-          // Format hyperlinks for Markdown
-          const formattedResponse = cleanedResponse.replace(/http(s)?:\/\/\S+/g, url => `[${url}](${url})`);
-
-          console.log(formattedResponse);
-          return formattedResponse;
-        } else {
-          throw new Error("Response structure not as expected.");
-        }
+        console.log(formattedResponse);
+        return formattedResponse;
       }
-console.log("Current result:", result);
-
-    } while (result.status !== "failed");
-
-    console.error("The process failed.");
-    return "";
-    
+    }
   } catch (error) {
     console.error("An error occurred:", error);
     return "";
   }
 }
 
-
 function currentTime() {
   let d = new Date();
   return d.toString();
 }
 
-// async function obtainSession(name) {
-//   const result = await client
-//     .db(chatDatabase)
-//     .collection(namesAndEmailsCollection)
-//     .findOne({
-//       username: name,
-//     });
-//   if (!result) {
-//     console.error("No user found with the username:", name);
-//     return null; // or handle the absence of the user appropriately
-//   }
-//   return parseInt(result.sessionNumber);
-// }
+async function obtainSession(name) {
+  const result = await client
+    .db(chatDatabase)
+    .collection(namesAndEmailsCollection)
+    .findOne({
+      username: name,
+    });
+  if (!result) {
+    console.error("No user found with the username:", name);
+    return null; // or handle the absence of the user appropriately
+  }
+  return parseInt(result.sessionNumber);
+}
 
 function updateStatus(name, status) {
   client
@@ -112,21 +105,21 @@ async function addNameAndEmail(name, email) {
 
 async function addMessage(name, message, recipient) {
   if (name == "customerRep" || name == "chat-bot") {
-   // const session = await obtainSession(recipient);
+    const session = await obtainSession(recipient);
     client.db(chatDatabase).collection(messagesCollection).insertOne({
       sender: name,
       reciever: recipient,
       time: currentTime(),
-      //session: session,
+      session: session,
       messageSent: message,
     });
   } else {
-   // const session = await obtainSession(name);
+    const session = await obtainSession(name);
     client.db(chatDatabase).collection(messagesCollection).insertOne({
       sender: name,
       reciever: recipient,
       time: currentTime(),
-      //session: session,
+      session: session,
       messageSent: message,
     });
   }
@@ -147,8 +140,6 @@ async function getLatestMessage(name) {
 
   return result.length > 0 ? result[0].messageSent : null;
 }
-
-
 
 http
   .createServer(async function (req, res) {
@@ -222,10 +213,10 @@ http
             await addMessage(body.name, body.message, body.recipient);
             res.end(JSON.stringify({ status: "success" }));
             break;
-          // case "getSession":
-          //   const session = await obtainSession(body.name);
-          //   res.end(session.toString());
-          //   break;
+          case "getSession":
+            const session = await obtainSession(body.name);
+            res.end(session.toString());
+            break;
           case "callChatBot":
             await addMessage(body.name, body.message, "chat-bot");
             const response = await callChatBot(body.message);
@@ -327,10 +318,6 @@ http
               }
             });
             res.end(JSON.stringify(sessionMessages));
-            break;
-            
-          default:
-            res.end(JSON.stringify({ error: "Invalid request" }));
             break;
         }
       } catch (error) {
