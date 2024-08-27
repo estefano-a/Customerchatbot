@@ -77,19 +77,19 @@ function currentTime() {
   return d.toString();
 }
 
-async function obtainSession(name) {
-  const result = await client
-    .db(chatDatabase)
-    .collection(namesAndEmailsCollection)
-    .findOne({
-      username: name,
-    });
-  if (!result) {
-    console.error("No user found with the username:", name);
-    return null; // or handle the absence of the user appropriately
-  }
-  return parseInt(result.sessionNumber);
-}
+// async function obtainSession(name) {
+//   const result = await client
+//     .db(chatDatabase)
+//     .collection(namesAndEmailsCollection)
+//     .findOne({
+//       username: name,
+//     });
+//   if (!result) {
+//     console.error("No user found with the username:", name);
+//     return null; // or handle the absence of the user appropriately
+//   }
+//   return parseInt(result.sessionNumber);
+// }
 
 function updateStatus(name, status) {
   client
@@ -97,9 +97,9 @@ function updateStatus(name, status) {
     .collection(namesAndEmailsCollection)
     .findOneAndUpdate(
       {
-        username: name,
-      },
-      { $set: { sessionStatus: status } }
+        username: name,}
+      //},
+      // { $set: { sessionStatus: status } }
     );
 }
 
@@ -107,8 +107,8 @@ async function addNameAndEmail(name, email) {
   client.db(chatDatabase).collection(namesAndEmailsCollection).insertOne({
     username: name,
     userEmail: email,
-    sessionNumber: 1,
-    sessionStatus: 'default',
+    // sessionNumber: 1,
+    // sessionStatus: 'default',
   });
 }
 
@@ -119,7 +119,7 @@ async function addMessage(name, message, recipient) {
       sender: name,
       reciever: recipient,
       time: currentTime(),
-      session: session,
+      //session: session,
       messageSent: message,
     });
   } else {
@@ -128,7 +128,7 @@ async function addMessage(name, message, recipient) {
       sender: name,
       reciever: recipient,
       time: currentTime(),
-      session: session,
+      //session: session,
       messageSent: message,
     });
   }
