@@ -55,7 +55,7 @@ async function callChatBot(str) {
             (url) => `[${url}](${url})`
           );
 
-          console.log(formattedResponse);
+          //console.log(formattedResponse);
           return formattedResponse;
         } else {
           throw new Error('Response structure not as expected.');
@@ -77,19 +77,19 @@ function currentTime() {
   return d.toString();
 }
 
-// async function obtainSession(name) {
-//   const result = await client
-//     .db(chatDatabase)
-//     .collection(namesAndEmailsCollection)
-//     .findOne({
-//       username: name,
-//     });
-//   if (!result) {
-//     console.error("No user found with the username:", name);
-//     return null; // or handle the absence of the user appropriately
-//   }
-//   return parseInt(result.sessionNumber);
-// }
+async function obtainSession(name) {
+  const result = await client
+    .db(chatDatabase)
+    .collection(namesAndEmailsCollection)
+    .findOne({
+      username: name,
+    });
+  if (!result) {
+    console.error("No user found with the username:", name);
+    return null; // or handle the absence of the user appropriately
+  }
+  return parseInt(result.sessionNumber);
+}
 
 function updateStatus(name, status) {
   client
