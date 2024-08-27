@@ -22,7 +22,15 @@ const namesAndEmailsCollection = 'namesAndEmails';
 const messagesCollection = 'messages';
 client.connect();
 
+// Flag to control AI vs. Live Support mode
+let isLiveSupportMode = false;
+
 async function callChatBot(str) {
+  if (isLiveSupportMode) {
+    console.log('AI responses are disabled. Currently in live support mode.');
+    return 'Live support is active. Please wait for a response.';
+  }
+
   try {
     const run = await openai.beta.threads.createAndRun({
       assistant_id: process.env.OPENAI_ASSISTANT_ID,
@@ -330,6 +338,7 @@ http
             break;
 
             case "live-support-session":
+              isLiveSupportMode = true;
               try {
                 const { messagesFromRebecca } = body;
             
