@@ -329,6 +329,37 @@ http
             res.end(JSON.stringify(sessionMessages));
             break;
 
+            case "live-support-session":
+              try {
+                // For the submit button to continue getting messages to Slack
+                const { messagesFromRebecca } = body;
+            
+                // Ensure messagesFromRebecca is in the correct format for Slack
+                const text = Array.isArray(messagesFromRebecca)
+                  ? messagesFromRebecca.join('\n')
+                  : messagesFromRebecca;
+            
+                // Log the message to be sent to Slack
+                console.log('Messages to Slack:', text);
+            
+                // Send the message to Slack
+                await slackApp.client.chat.postMessage({
+                  token: process.env.SLACK_BOT_TOKEN,
+                  channel: process.env.SLACK_CHANNEL,
+                  text: text,
+                });
+            
+                // Respond with success
+                res.end(JSON.stringify({ status: "Message sent" }));
+              } catch (error) {
+                console.error('Error sending message to Slack:', error);
+            
+                // Respond with error
+                res.statusCode = 500;
+                res.end(JSON.stringify({ error: "Error sending message" }));
+              }
+              break;
+
           default:
             res.end(JSON.stringify({ error: 'Invalid request' }));
             break;
