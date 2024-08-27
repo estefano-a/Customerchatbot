@@ -119,7 +119,7 @@ async function addMessage(name, message, recipient) {
       sender: name,
       reciever: recipient,
       time: currentTime(),
-      //session: session,
+      session: session,
       messageSent: message,
     });
   } else {
@@ -128,7 +128,7 @@ async function addMessage(name, message, recipient) {
       sender: name,
       reciever: recipient,
       time: currentTime(),
-      //session: session,
+      session: session,
       messageSent: message,
     });
   }
@@ -331,7 +331,6 @@ http
 
             case "live-support-session":
               try {
-                // For the submit button to continue getting messages to Slack
                 const { messagesFromRebecca } = body;
             
                 // Ensure messagesFromRebecca is in the correct format for Slack
