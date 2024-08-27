@@ -23,7 +23,7 @@ const messagesCollection = 'messages';
 client.connect();
 
 // Flag to control AI vs. Live Support mode
-let isLiveSupportMode = false;
+//let isLiveSupportMode = false;
 
 async function callChatBot(str) {
   // if (isLiveSupportMode) {
@@ -338,7 +338,7 @@ http
             break;
 
             case "live-support-session":
-              isLiveSupportMode = true;
+              //isLiveSupportMode = true;
               try {
                 const { messagesFromRebecca } = body;
             
