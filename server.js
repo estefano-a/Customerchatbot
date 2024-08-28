@@ -35,6 +35,7 @@ async function callChatBot(str) {
 
     let result;
     do {
+      // Adding a delay to prevent hitting rate limits
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       result = await openai.beta.threads.runs.retrieve(run.thread_id, run.id);
@@ -45,32 +46,31 @@ async function callChatBot(str) {
         );
         const response = threadMessages.data[0]?.content[0]?.text?.value;
 
-      if (response) {
-        const cleanedResponse = response.replace(/【\d+:\d+†source】/g, '');
+        if (response) {
+          const cleanedResponse = response.replace(/【\d+:\d+†source】/g, '');
 
-      // Only format the URL once here, avoid further modifications in script.js
-      const formattedResponse = cleanedResponse.replace(
-        /(https?:\/\/[^\s<]+)/g,
-        (url) => {
-          // Remove any trailing punctuation
-          url = url.replace(/[),.]+$/, '');
+          // Format hyperlinks for Markdown
+          const formattedResponse = cleanedResponse.replace(
+            /http(s)?:\/\/\S+/g,
+            (url) => `[${url}](${url})`
+          );
 
-          // Format with markdown syntax
-          return `<a href="${url}" target="_blank">${url}</a>`;
+          //console.log(formattedResponse);
+          return formattedResponse;
+        } else {
+          throw new Error('Response structure not as expected.');
         }
-      );
+      }
+      
+    } while (result.status !== 'failed');
 
-      console.log(formattedResponse);
-      return formattedResponse;
-    } else {
-      throw new Error('Response structure not as expected.');
-    }
+    console.error('The process failed.');
+    return '';
+  } catch (error) {
+    console.error('An error occurred:', error);
+    return '';
   }
-  console.log('Current result:', result);
-} while (result.status !== 'failed');
-
-console.error('The process failed.');
-return '';
+}
 
 function currentTime() {
   let d = new Date();
