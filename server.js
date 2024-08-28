@@ -50,13 +50,13 @@ async function callChatBot(str) {
           const cleanedResponse = response.replace(/【\d+:\d+†source】/g, '');
 
           // Format hyperlinks for Markdown
-          const formattedResponse = cleanedResponse.replace(
+          /*const formattedResponse = cleanedResponse.replace(
             /http(s)?:\/\/\S+/g,
             (url) => `[${url}](${url})`
           );
 
-          //console.log(formattedResponse);
-          return formattedResponse;
+          //console.log(formattedResponse);*/
+          return cleanedResponse;
         } else {
           throw new Error('Response structure not as expected.');
         }
