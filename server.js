@@ -208,7 +208,7 @@ if (!global.wss) {
 
             // Notify the help desk channel
             let notificationMessage = `<!channel> New chat in room: <%23${channelId}|>`;
-            send_to_slack_api(process.env.HELP_DESK_CHANNEL, notificationMessage);
+            send_to_slack_api(process.env.SLACK_CHANNEL, notificationMessage);
           }
         }
       } else {
