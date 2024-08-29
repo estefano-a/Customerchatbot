@@ -162,6 +162,11 @@ const slackChannels = [
   process.env.REBECCA_SUPPORT_5,
 ];
 
+function ClientConnection(ws, channelIndex) {
+  this.websocket = ws; // WebSocket connection object
+  this.channelIndex = channelIndex; // Index of the channel assigned to this connection
+}
+
 // Initialize WebSocket server and related arrays if not already initialized
 if (!global.wss) {
   global.wss = new WebSocket.Server({ port: 443 });
