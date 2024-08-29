@@ -345,7 +345,7 @@ http
                 // Send the message to Slack
                 await slackApp.client.chat.postMessage({
                   token: process.env.SLACK_BOT_TOKEN,
-                  channel: process.env.SLACK_CHANNEL,
+                  channel: process.env.SLACK_1,
                   text: text,
                 });
             
