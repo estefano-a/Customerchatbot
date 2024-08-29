@@ -3,6 +3,7 @@ const http = require('http');
 const { MongoClient } = require('mongodb');
 const { OpenAI } = require('openai');
 const { App } = require('@slack/bolt');
+const { WebClient } = require('@slack/web-api');
 const WebSocket = require('ws');
 const fs = require('fs');
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
