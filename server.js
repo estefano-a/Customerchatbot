@@ -7,7 +7,7 @@ const { WebClient } = require('@slack/web-api');
 const WebSocket = require('ws');
 const fs = require('fs');
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-const port = process.env.PORT || 10000;
+const port = process.env.PORT || 10001;
 
 const slackApp = new App({
   signingSecret: process.env.SLACK_SIGNING_SECRET,
