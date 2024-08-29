@@ -164,7 +164,7 @@ const channels = {
 };
 
 // Set up the WebSocket server
-const wss = new WebSocket.Server({ port: 2000 });
+const wss = new WebSocket.Server({ port: 443 });
 
 wss.on('connection', (ws) => {
   console.log('New WebSocket connection established');
