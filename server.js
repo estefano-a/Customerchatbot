@@ -484,6 +484,20 @@ http
   .listen(port, () => {
     console.log(`Chatbot and Slack integration listening on port ${port}`);
   });
+// Graceful shutdown handling
+process.on('SIGINT', () => {
+  console.log('SIGINT received: closing servers...');
+  server.close(() => {
+    console.log('HTTP server closed');
+    wss.close(() => {
+      console.log('WebSocket server closed');
+      client.close(false, () => {
+        console.log('MongoDB connection closed');
+        process.exit(0);
+      });
+    });
+  });
+});
 
 // Start Slack Bolt app
 (async () => {
