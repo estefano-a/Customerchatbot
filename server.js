@@ -100,6 +100,7 @@ wss.on('connection', (ws) => {
     });
 
     ws.on('close', function () {
+        console.log('WebSocket connection closed');
         if (isConnected(ws)) {
             let index = getClientIndex(ws);
             if (index !== -1) {
@@ -124,6 +125,9 @@ wss.on('connection', (ws) => {
                 console.log("Waiting user disconnected");
             }
         }
+    });
+  ws.on('error', function (error) {
+        console.error('WebSocket error:', error);
     });
 });
 
