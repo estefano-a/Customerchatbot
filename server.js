@@ -617,7 +617,7 @@ process.on('SIGINT', () => {
   });
 });
 
-server.listen(httpPort, () => {
+server.listen(port, () => {
     console.log(`Chatbot and Slack integration listening on port ${httpPort}`);
   });
 
