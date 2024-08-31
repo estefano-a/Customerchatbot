@@ -28,186 +28,6 @@ const namesAndEmailsCollection = 'namesAndEmails';
 const messagesCollection = 'messages';
 client.connect();
 
-
-// WebSocket and client connection management
-const connectedClients = [];
-const waitingSockets = [];
-const channels = [
-  process.env.REBECCA_SUPPORT_1,
-  process.env.REBECCA_SUPPORT_2,
-  process.env.REBECCA_SUPPORT_3,
-  process.env.REBECCA_SUPPORT_4,
-  process.env.REBECCA_SUPPORT_5,
-];
-const channelOccupied = [false, false, false, false, false];
-
-const helpDeskChannel = process.env.SLACK_CHANNEL; // Slack help desk channel
-
-// Define client connection constructor
-function ClientConnection(ws, channelIndex) {
-    this.websocket = ws;
-    this.channelIndex = channelIndex;
-}
-
-// Set up the WebSocket server
-const wss = new WebSocket.Server({ server });
-
-wss.on('connection', (ws) => {
-    console.log('New WebSocket connection established');
-
-    ws.on('message', (message) => {
-        console.log('Message received from client:', message.toString());
-
-        const incomingMessage = message.toString();
-        let [channelId, ...msgs] = incomingMessage.split(":");
-        console.log("Channel ID: " + String(channelId));
-
-        let channelIndex = channels.indexOf(channelId);
-        let msg = msgs.join("");
-
-        if (channelIndex === -1 && channelId !== helpDeskChannel) {
-            console.log("Message sent from a client");
-
-            if (isConnected(ws)) {
-                console.log("Client is connected already");
-                channelIndex = findChannelIndex(ws);
-
-                if (channelIndex === -1) return;
-                channelId = channels[channelIndex];
-                send_to_slack(channelId, msg);
-                console.log("Successfully sent to slack channel");
-            } else {
-                attemptToConnect(ws);
-                if (isConnected(ws)) {
-                    let clientIndex = getClientIndex(ws);
-                    let client = connectedClients[clientIndex];
-                    channelId = channels[client.channelIndex];
-                    send_to_slack(channelId, msg);
-                    send_to_slack(helpDeskChannel, `<!channel> We have a new chat in room: <#${channelId}>`);
-                }
-            }
-        } else {
-            console.log("Message came from slack");
-            for (let i = 0; i < connectedClients.length; i++) {
-                let client = connectedClients[i];
-                if (channelId === channels[client.channelIndex]) {
-                    client.websocket.send(msg);
-                    console.log("Successfully sent to client");
-                    console.log('Successfully sent to client');
-                }
-            }
-        }
-    });
-
-    ws.on('close', function () {
-        console.log('WebSocket connection closed');
-        if (isConnected(ws)) {
-            let index = getClientIndex(ws);
-            if (index !== -1) {
-                let channelIndex = findChannelIndex(ws);
-                connectedClients.splice(index, 1);
-                console.log("Connected user disconnected");
-
-                if (waitingSockets.length > 0) {
-                    let waitingSocket = waitingSockets[0];
-                    let newClient = new ClientConnection(waitingSocket, channelIndex);
-                    connectedClients.push(newClient);
-                    waitingSockets.splice(0, 1);
-                    console.log("Waiting user connected");
-                } else {
-                    channelOccupied[channelIndex] = false;
-                }
-            }
-        } else {
-            let index = waitingSockets.indexOf(ws);
-            if (index !== -1) {
-                waitingSockets.splice(index, 1);
-                console.log("Waiting user disconnected");
-            }
-        }
-    });
-  ws.on('error', function (error) {
-        console.error('WebSocket error:', error);
-    });
-});
-
-// Function to send a message to Slack using WebClient
-async function send_to_slack(channelId, msg) {
-  try {
-    await slackClient.chat.postMessage({
-      channel: channelId,
-      text: msg,
-    });
-    console.log('Message Sent to channel: ' + String(channelId));
-    console.log(`Message content: ${msg}`);
-  } catch (error) {
-    console.error('Error sending message to Slack:', error);
-  }
-}
-
-function isConnected(ws) {
-    for (let i = 0; i < connectedClients.length; i++) {
-        let clientConnection = connectedClients[i];
-        if (ws === clientConnection.websocket) {
-            console.log("Socket is connected already");
-            return true;
-        }
-    }
-    console.log("Socket has not yet connected");
-    return false;
-}
-
-function attemptToConnect(ws) {
-    console.log("Attempting to connect client...");
-    for (let i = 0; i < channelOccupied.length; i++) {
-        if (!channelOccupied[i]) {
-            let clientConnection = new ClientConnection(ws, i);
-            connectedClients.push(clientConnection);
-            channelOccupied[i] = true;
-            console.log("Successfully connected socket to channel");
-            return;
-        }
-    }
-    console.log("Socket pushed to waiting list");
-    waitingSockets.push(ws);
-}
-
-function findChannelIndex(ws) {
-    for (let i = 0; i < connectedClients.length; i++) {
-        let socket = connectedClients[i];
-        if (ws === socket.websocket) {
-            return socket.channelIndex;
-        }
-    }
-    console.log("Channel Index not found");
-    return -1;
-}
-
-function getClientIndex(ws) {
-    for (let i = 0; i < connectedClients.length; i++) {
-        let client = connectedClients[i];
-        if (ws === client.websocket) {
-            return i;
-        }
-    }
-    console.log("Could not find Client Index");
-    return -1;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 async function callChatBot(str) {
   try {
     const run = await openai.beta.threads.createAndRun({
@@ -596,6 +416,174 @@ const server = http.createServer(async function (req, res) {
   server.listen(httpPort, () => {
     console.log(`Chatbot and Slack integration listening on port ${httpPort}`);
   });
+
+// WebSocket and client connection management
+const connectedClients = [];
+const waitingSockets = [];
+const channels = [
+  process.env.REBECCA_SUPPORT_1,
+  process.env.REBECCA_SUPPORT_2,
+  process.env.REBECCA_SUPPORT_3,
+  process.env.REBECCA_SUPPORT_4,
+  process.env.REBECCA_SUPPORT_5,
+];
+const channelOccupied = [false, false, false, false, false];
+
+const helpDeskChannel = process.env.SLACK_CHANNEL; // Slack help desk channel
+
+// Define client connection constructor
+function ClientConnection(ws, channelIndex) {
+    this.websocket = ws;
+    this.channelIndex = channelIndex;
+}
+
+// Set up the WebSocket server
+const wss = new WebSocket.Server({ server });
+
+wss.on('connection', (ws) => {
+    console.log('New WebSocket connection established');
+
+    ws.on('message', (message) => {
+        console.log('Message received from client:', message.toString());
+
+        const incomingMessage = message.toString();
+        let [channelId, ...msgs] = incomingMessage.split(":");
+        console.log("Channel ID: " + String(channelId));
+
+        let channelIndex = channels.indexOf(channelId);
+        let msg = msgs.join("");
+
+        if (channelIndex === -1 && channelId !== helpDeskChannel) {
+            console.log("Message sent from a client");
+
+            if (isConnected(ws)) {
+                console.log("Client is connected already");
+                channelIndex = findChannelIndex(ws);
+
+                if (channelIndex === -1) return;
+                channelId = channels[channelIndex];
+                send_to_slack(channelId, msg);
+                console.log("Successfully sent to slack channel");
+            } else {
+                attemptToConnect(ws);
+                if (isConnected(ws)) {
+                    let clientIndex = getClientIndex(ws);
+                    let client = connectedClients[clientIndex];
+                    channelId = channels[client.channelIndex];
+                    send_to_slack(channelId, msg);
+                    send_to_slack(helpDeskChannel, `<!channel> We have a new chat in room: <#${channelId}>`);
+                }
+            }
+        } else {
+            console.log("Message came from slack");
+            for (let i = 0; i < connectedClients.length; i++) {
+                let client = connectedClients[i];
+                if (channelId === channels[client.channelIndex]) {
+                    client.websocket.send(msg);
+                    console.log("Successfully sent to client");
+                    console.log('Successfully sent to client');
+                }
+            }
+        }
+    });
+
+    ws.on('close', function () {
+        console.log('WebSocket connection closed');
+        if (isConnected(ws)) {
+            let index = getClientIndex(ws);
+            if (index !== -1) {
+                let channelIndex = findChannelIndex(ws);
+                connectedClients.splice(index, 1);
+                console.log("Connected user disconnected");
+
+                if (waitingSockets.length > 0) {
+                    let waitingSocket = waitingSockets[0];
+                    let newClient = new ClientConnection(waitingSocket, channelIndex);
+                    connectedClients.push(newClient);
+                    waitingSockets.splice(0, 1);
+                    console.log("Waiting user connected");
+                } else {
+                    channelOccupied[channelIndex] = false;
+                }
+            }
+        } else {
+            let index = waitingSockets.indexOf(ws);
+            if (index !== -1) {
+                waitingSockets.splice(index, 1);
+                console.log("Waiting user disconnected");
+            }
+        }
+    });
+  ws.on('error', function (error) {
+        console.error('WebSocket error:', error);
+    });
+});
+
+// Function to send a message to Slack using WebClient
+async function send_to_slack(channelId, msg) {
+  try {
+    await slackClient.chat.postMessage({
+      channel: channelId,
+      text: msg,
+    });
+    console.log('Message Sent to channel: ' + String(channelId));
+    console.log(`Message content: ${msg}`);
+  } catch (error) {
+    console.error('Error sending message to Slack:', error);
+  }
+}
+
+function isConnected(ws) {
+    for (let i = 0; i < connectedClients.length; i++) {
+        let clientConnection = connectedClients[i];
+        if (ws === clientConnection.websocket) {
+            console.log("Socket is connected already");
+            return true;
+        }
+    }
+    console.log("Socket has not yet connected");
+    return false;
+}
+
+function attemptToConnect(ws) {
+    console.log("Attempting to connect client...");
+    for (let i = 0; i < channelOccupied.length; i++) {
+        if (!channelOccupied[i]) {
+            let clientConnection = new ClientConnection(ws, i);
+            connectedClients.push(clientConnection);
+            channelOccupied[i] = true;
+            console.log("Successfully connected socket to channel");
+            return;
+        }
+    }
+    console.log("Socket pushed to waiting list");
+    waitingSockets.push(ws);
+}
+
+function findChannelIndex(ws) {
+    for (let i = 0; i < connectedClients.length; i++) {
+        let socket = connectedClients[i];
+        if (ws === socket.websocket) {
+            return socket.channelIndex;
+        }
+    }
+    console.log("Channel Index not found");
+    return -1;
+}
+
+function getClientIndex(ws) {
+    for (let i = 0; i < connectedClients.length; i++) {
+        let client = connectedClients[i];
+        if (ws === client.websocket) {
+            return i;
+        }
+    }
+    console.log("Could not find Client Index");
+    return -1;
+}
+
+
+
 // Graceful shutdown handling
 process.on('SIGINT', () => {
   console.log('SIGINT received: closing servers...');
