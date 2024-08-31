@@ -617,12 +617,12 @@ process.on('SIGINT', () => {
   });
 });
 
+server.listen(httpPort, () => {
+    console.log(`Chatbot and Slack integration listening on port ${httpPort}`);
+  });
+
 // Start Slack Bolt app
 (async () => {
   await slackApp.start(slackPort);
   console.log(`⚡️ Slack Bolt app is running on port ${slackPort}!`);
 })();
-
-server.listen(httpPort, () => {
-    console.log(`Chatbot and Slack integration listening on port ${httpPort}`);
-  });
