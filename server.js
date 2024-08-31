@@ -28,6 +28,21 @@ const namesAndEmailsCollection = 'namesAndEmails';
 const messagesCollection = 'messages';
 client.connect();
 
+// Function to handle Slack messages
+slackApp.message(async ({ message }) => {
+  const slackMessage = message.text; // Get the text of the message from Slack
+
+  // Broadcast the Slack message to all WebSocket clients
+  if (wss.clients.size > 0) {
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(slackMessage); // Send Slack message to all WebSocket clients
+        console.log(`Message sent to client: ${slackMessage}`);
+      }
+    });
+  }
+});
+
 async function callChatBot(str) {
   try {
     const run = await openai.beta.threads.createAndRun({
@@ -481,7 +496,6 @@ wss.on('connection', (ws) => {
                 if (channelId === channels[client.channelIndex]) {
                     client.websocket.send(msg);
                     console.log("Successfully sent to client");
-                    console.log('Successfully sent to client');
                 }
             }
         }
