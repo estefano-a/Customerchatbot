@@ -428,9 +428,7 @@ const server = http.createServer(async function (req, res) {
       }
     });
   })
-  server.listen(httpPort, () => {
-    console.log(`Chatbot and Slack integration listening on port ${httpPort}`);
-  });
+  
 
 // WebSocket and client connection management
 const connectedClients = [];
@@ -452,8 +450,14 @@ function ClientConnection(ws, channelIndex) {
     this.channelIndex = channelIndex;
 }
 
-// Set up the WebSocket server
-const wss = new WebSocket.Server({ server });
+// Set up the WebSocket server using the existing HTTP server
+const wss = new WebSocket.Server({ noServer: true });
+
+server.on('upgrade', function (request, socket, head) {
+  wss.handleUpgrade(request, socket, head, function (ws) {
+    wss.emit('connection', ws, request);
+  });
+});
 
 wss.on('connection', (ws) => {
     console.log('New WebSocket connection established');
@@ -618,3 +622,7 @@ process.on('SIGINT', () => {
   await slackApp.start(slackPort);
   console.log(`⚡️ Slack Bolt app is running on port ${slackPort}!`);
 })();
+
+server.listen(httpPort, () => {
+    console.log(`Chatbot and Slack integration listening on port ${httpPort}`);
+  });
