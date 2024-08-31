@@ -8,7 +8,7 @@ const { WebClient } = require('@slack/web-api');
 const WebSocket = require('ws');
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-const httpPort = process.env.HTTP_PORT || 10000; // HTTP server port
+const port = process.env.HTTP_PORT || 10000; // HTTP server port
 const slackPort = process.env.SLACK_BOLT_PORT || 3000; // Slack Bolt app port
 
 const slackApp = new App({
