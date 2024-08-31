@@ -392,7 +392,7 @@ const server = http.createServer(async function (req, res) {
                 // Send a connection command to all clients
                 wss.clients.forEach((client) => {
                   if (client.readyState === WebSocket.OPEN) {
-                    client.send(`connect:${availableChannel}`);
+                    client.send(`connect:${availableChannel}`, msg);
                     channels[availableChannel] = client; // Link the WebSocket client to the Slack channel
                     console.log(`Client connected to channel: ${availableChannel}`);
                   }
