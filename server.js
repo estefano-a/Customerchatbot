@@ -340,6 +340,17 @@ async function getLatestMessage(name) {
 
 // HTTP server setup
 const server = http.createServer(async function (req, res) {
+  if (req.method === 'HEAD') {
+        // Handle HEAD request
+        res.writeHead(200, {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, HEAD',
+            'Access-Control-Allow-Headers': 'Content-Type',
+        });
+        res.end(); // Respond with no body
+        return;
+    }
     let body = '';
     req.on('data', (chunk) => {
       body += chunk.toString();
