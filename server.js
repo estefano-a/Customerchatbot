@@ -340,7 +340,7 @@ async function getLatestMessage(name) {
 
 // HTTP server setup
 const server = http.createServer(async function (req, res) {
-  if (req.method === 'HEAD') {
+  if (req.method === 'HEAD' || req.method === 'GET') {
         // Handle HEAD request
         res.writeHead(200, {
             'Content-Type': 'application/json',
