@@ -50,7 +50,7 @@ function ClientConnection(ws, channelIndex) {
 }
 
 // Set up the WebSocket server
-const wss = new WebSocket.Server({ port: 8080 });
+const wss = new WebSocket.Server({ port: 443 });
 
 wss.on('connection', (ws) => {
     console.log('New WebSocket connection established');
