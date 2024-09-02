@@ -197,17 +197,6 @@ function getClientIndex(ws) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 async function callChatBot(str) {
   try {
     const run = await openai.beta.threads.createAndRun({
@@ -217,43 +206,30 @@ async function callChatBot(str) {
       },
     });
 
-    console.log('run status: ', run.status);
-
+    console.log('Run status:', run.status);
     let result;
-    do {
-      // Adding a delay to prevent hitting rate limits
-      await new Promise((resolve) => setTimeout(resolve, 2000));
 
+    do {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       result = await openai.beta.threads.runs.retrieve(run.thread_id, run.id);
 
       if (result.status === 'completed') {
-        const threadMessages = await openai.beta.threads.messages.list(
-          run.thread_id
-        );
+        const threadMessages = await openai.beta.threads.messages.list(run.thread_id);
         const response = threadMessages.data[0]?.content[0]?.text?.value;
 
         if (response) {
           const cleanedResponse = response.replace(/【\d+:\d+†source】/g, '');
-
-          // Format hyperlinks for Markdown
-          /*const formattedResponse = cleanedResponse.replace(
-            /http(s)?:\/\/\S+/g,
-            (url) => `[${url}](${url})`
-          );
-
-          //console.log(formattedResponse);*/
           return cleanedResponse;
         } else {
           throw new Error('Response structure not as expected.');
         }
       }
-      
     } while (result.status !== 'failed');
 
     console.error('The process failed.');
     return '';
   } catch (error) {
-    console.error('An error occurred:', error);
+    console.error('An error occurred in callChatBot:', error.message, error.stack);
     return '';
   }
 }
