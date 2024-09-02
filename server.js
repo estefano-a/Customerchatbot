@@ -210,7 +210,7 @@ async function callChatBot(str) {
     let result;
 
     do {
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       result = await openai.beta.threads.runs.retrieve(run.thread_id, run.id);
 
       if (result.status === 'completed') {
