@@ -176,35 +176,39 @@ const server = http.createServer(async function (req, res) {
 
         switch (body.request) {
           case 'send-message':
-            const { type } = body;
-            const { latestMessage } = body;
+            const { type, latestMessage } = body; // Destructure both variables at once
             let feedbackText;
+          
+            // Determine the feedback text based on type
             if (type === 'like') {
               feedbackText = "Our user gave a 👍 on Rebecca's performance.";
             } else if (type === 'dislike') {
               feedbackText = "Our user gave a 👎 on Rebecca's performance.";
             }
-
+          
             try {
-                // const latestMessage = await getLatestMessage(body.name);
-                const text = latestMessage
-                  ? `${feedbackText}\nLatest response from Rebecca: ${latestMessage}`
-                  : feedbackText;
-              }
-
-
+              // Construct the message text
+              const text = latestMessage
+                ? `${feedbackText}\nLatest response from Rebecca: ${latestMessage}`
+                : feedbackText;
+          
+              // Send the message to Slack
               await slackClient.chat.postMessage({
                 token: process.env.SLACK_BOT_TOKEN,
                 channel: process.env.SLACK_CHANNEL,
                 text: text,
               });
+          
+              // Respond with success
               res.end(JSON.stringify({ status: 'Message sent' }));
+          
             } catch (error) {
               console.error(error);
               res.statusCode = 500;
               res.end(JSON.stringify({ error: 'Error sending message' }));
             }
             break;
+
           case 'get-latest-message':
             try {
               const { name } = body;
