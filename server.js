@@ -92,22 +92,6 @@ function handleSlackEvents(req, res) {
   });
 }
 
-// Function to interact with OpenAI
-async function callChatBot(message) {
-  try {
-    const run = await openai.beta.threads.createAndRun({
-      assistant_id: process.env.OPENAI_ASSISTANT_ID,
-      thread: {
-        messages: [{ role: 'user', content: message }],
-      },
-    });
-    // Return a response
-    return run;
-  } catch (error) {
-    console.error('An error occurred in callChatBot:', error.message);
-    return { error: 'Failed to get response from OpenAI' };
-  }
-}
 
 // Set up a single HTTP server to handle all requests
 const server = http.createServer((req, res) => {
@@ -202,7 +186,7 @@ wss.on('connection', (ws) => {
   });
 
   ws.on('error', function (error) {
-    console.error('WebSocket error:', error);
+  console.error('WebSocket error:', error.message); // More specific logging
   });
 });
 
@@ -427,10 +411,6 @@ async function getLatestMessage(name) {
 
   return result.length > 0 ? result[0].messageSent : null;
 }
-
-server.listen(PORT, () => {
-  console.log(`Service listening on port ${PORT}`);
-});
 
 // Start Slack Bolt app
 (async () => {
