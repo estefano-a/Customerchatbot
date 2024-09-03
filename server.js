@@ -494,7 +494,7 @@ http
                 console.log('Messages to Slack:', text);
             
                 // Attempt to connect and send a message to an available channel
-                attemptToConnect(global.wss); // This will connect WebSocket if not already connected
+                //attemptToConnect(global.wss); // This will connect WebSocket if not already connected
             
                 // Find an available channel and send the message
                 const availableChannelIndex = global.channelOccupied.indexOf(false);
