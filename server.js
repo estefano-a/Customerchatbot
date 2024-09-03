@@ -8,8 +8,8 @@ const { WebClient } = require('@slack/web-api');
 const WebSocket = require('ws');
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-const httpPort = process.env.HTTP_PORT || 10000; // HTTP server port
-const slackPort = process.env.SLACK_BOLT_PORT || 3000; // Slack Bolt app port
+const PORT = process.env.PORT || 3000; // Default to 3000 if no environment variable is provided
+//const slackPort = process.env.SLACK_BOLT_PORT || 3000; // Slack Bolt app port
 
 const slackApp = new App({
   signingSecret: process.env.SLACK_SIGNING_SECRET,
@@ -50,7 +50,8 @@ function ClientConnection(ws, channelIndex) {
 }
 
 // Set up the WebSocket server
-const wss = new WebSocket.Server({ port: 8080 });
+//const wss = new WebSocket.Server({ port: 8080 });
+const wss = new WebSocket.Server({ port: PORT });
 
 wss.on('connection', (ws) => {
     console.log('New WebSocket connection established');
@@ -580,9 +581,9 @@ const server = http.createServer(async function (req, res) {
       }
     });
   })
-  server.listen(httpPort, () => {
-    console.log(`Chatbot and Slack integration listening on port ${httpPort}`);
-  });
+  server.listen(PORT, () => {
+    console.log(`Service listening on port ${PORT}`);
+});
 // Graceful shutdown handling
 process.on('SIGINT', () => {
   console.log('SIGINT received: closing servers...');
@@ -600,6 +601,10 @@ process.on('SIGINT', () => {
 
 // Start Slack Bolt app
 (async () => {
-  await slackApp.start(slackPort);
-  console.log(`⚡️ Slack Bolt app is running on port ${slackPort}!`);
+  try {
+    await slackApp.start(PORT);
+    console.log(`⚡️ Slack Bolt app is running on port ${PORT}!`);
+  } catch (error) {
+    console.error('Error starting Slack Bolt app:', error);
+  }
 })();
