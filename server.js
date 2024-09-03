@@ -274,4 +274,186 @@ function isConnected(ws) {
 
 function attemptToConnect(ws) {
   console.log("Attempting to connect client...");
-  for (
+  for (let i = 0; i < channelOccupied.length; i++) {
+    if (!channelOccupied[i]) {
+      let clientConnection = new ClientConnection(ws, i);
+      connectedClients.push(clientConnection);
+      channelOccupied[i] = true;
+      console.log('Successfully connected socket to channel');
+      return;
+    }
+  }
+  console.log('Socket pushed to waiting list');
+  waitingSockets.push(ws);
+}
+
+function findChannelIndex(ws) {
+  for (let i = 0; i < connectedClients.length; i++) {
+    let socket = connectedClients[i];
+    if (ws === socket.websocket) {
+      return socket.channelIndex;
+    }
+  }
+  console.log('Channel Index not found');
+  return -1;
+}
+
+function getClientIndex(ws) {
+  for (let i = 0; i < connectedClients.length; i++) {
+    let client = connectedClients[i];
+    if (ws === client.websocket) {
+      return i;
+    }
+  }
+  console.log('Could not find Client Index');
+  return -1;
+}
+
+async function callChatBot(str) {
+  try {
+    const run = await openai.beta.threads.createAndRun({
+      assistant_id: process.env.OPENAI_ASSISTANT_ID,
+      thread: {
+        messages: [{ role: 'user', content: str }],
+      },
+    });
+
+    console.log('Run status:', run.status);
+    let result;
+
+    do {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      result = await openai.beta.threads.runs.retrieve(run.thread_id, run.id);
+
+      if (result.status === 'completed') {
+        const threadMessages = await openai.beta.threads.messages.list(
+          run.thread_id
+        );
+        const response = threadMessages.data[0]?.content[0]?.text?.value;
+
+        if (response) {
+          const cleanedResponse = response.replace(/【\d+:\d+†source】/g, '');
+          return cleanedResponse;
+        } else {
+          throw new Error('Response structure not as expected.');
+        }
+      }
+    } while (result.status !== 'failed');
+
+    console.error('The process failed.');
+    return '';
+  } catch (error) {
+    console.error(
+      'An error occurred in callChatBot:',
+      error.message,
+      error.stack
+    );
+    return '';
+  }
+}
+
+function currentTime() {
+  let d = new Date();
+  return d.toString();
+}
+
+// async function obtainSession(name) {
+//   const result = await client
+//     .db(chatDatabase)
+//     .collection(namesAndEmailsCollection)
+//     .findOne({
+//       username: name,
+//     });
+//   if (!result) {
+//     console.error("No user found with the username:", name);
+//     return null; // or handle the absence of the user appropriately
+//   }
+//   return parseInt(result.sessionNumber);
+// }
+
+function updateStatus(name, status) {
+  client.db(chatDatabase).collection(namesAndEmailsCollection).findOneAndUpdate(
+    {
+      username: name,
+    }
+    //},
+    // { $set: { sessionStatus: status } }
+  );
+}
+
+async function addNameAndEmail(name, email) {
+  client.db(chatDatabase).collection(namesAndEmailsCollection).insertOne({
+    username: name,
+    userEmail: email,
+    // sessionNumber: 1,
+    // sessionStatus: 'default',
+  });
+}
+
+async function addMessage(name, message, recipient) {
+  if (name == 'customerRep' || name == 'chat-bot') {
+    // const session = await obtainSession(recipient);
+    client.db(chatDatabase).collection(messagesCollection).insertOne({
+      sender: name,
+      reciever: recipient,
+      time: currentTime(),
+      //session: session,
+      messageSent: message,
+    });
+  } else {
+    // const session = await obtainSession(name);
+    client.db(chatDatabase).collection(messagesCollection).insertOne({
+      sender: name,
+      reciever: recipient,
+      time: currentTime(),
+      //session: session,
+      messageSent: message,
+    });
+  }
+  unreadMessages.push([name, message, recipient]);
+}
+
+async function getLatestMessage(name) {
+  const result = await client
+    .db(chatDatabase)
+    .collection(messagesCollection)
+    .find({
+      reciever: name,
+      sender: 'chat-bot',
+    })
+    .sort({ time: -1 })
+    .limit(1)
+    .toArray();
+
+  return result.length > 0 ? result[0].messageSent : null;
+}
+
+server.listen(PORT, () => {
+  console.log(`Service listening on port ${PORT}`);
+});
+
+// Start Slack Bolt app
+(async () => {
+  try {
+    await slackApp.start(PORT);
+    console.log(`⚡️ Slack Bolt app is running on port ${PORT}!`);
+  } catch (error) {
+    console.error('Error starting Slack Bolt app:', error);
+  }
+})();
+
+// Graceful shutdown handling
+process.on('SIGINT', () => {
+  console.log('SIGINT received: closing servers...');
+  server.close(() => {
+    console.log('HTTP server closed');
+    wss.close(() => {
+      console.log('WebSocket server closed');
+      client.close(false, () => {
+        console.log('MongoDB connection closed');
+        process.exit(0);
+      });
+    });
+  });
+});
+
