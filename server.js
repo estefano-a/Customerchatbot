@@ -8,7 +8,7 @@ const { WebClient } = require('@slack/web-api');
 const WebSocket = require('ws');
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-const port = process.env.HTTP_PORT || 10000; // HTTP server port
+const httpPort = process.env.HTTP_PORT || 10000; // HTTP server port
 const slackPort = process.env.SLACK_BOLT_PORT || 3000; // Slack Bolt app port
 
 const slackApp = new App({
@@ -612,7 +612,7 @@ process.on('SIGINT', () => {
   });
 });
 
-server.listen(port, () => {
+server.listen(httpPort, () => {
   console.log(`Chatbot and Slack integration listening on port ${httpPort}`);
 });
 
