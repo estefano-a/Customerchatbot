@@ -151,8 +151,9 @@ async function getLatestMessage(name) {
   return result.length > 0 ? result[0].messageSent : null;
 }
 
-http
+const server = http
   .createServer(async function (req, res) {
+     if (req.method === 'POST') {
     let body = '';
     req.on('data', (chunk) => {
       body += chunk.toString();
@@ -375,7 +376,54 @@ http
         }
       }
     });
-  })
-  .listen(port, () => {
-    console.log(`Chatbot and Slack integration listening on port ${port}`);
+  }else {
+    res.writeHead(404, { 'Content-Type': 'text/plain' });
+    res.end('Only POST requests are supported');
+  }
+});
+  
+// Initialize WebSocket server on the same HTTP server
+const wss = new WebSocket.Server({ server });
+
+// Handle WebSocket connections
+wss.on('connection', (ws) => {
+  console.log('Client connected via WebSocket');
+
+  ws.on('message', async (message) => {
+    const data = JSON.parse(message);
+    if (data.request === 'live-support-session') {
+      const { messagesFromRebecca } = data;
+
+      // Ensure messagesFromRebecca is in the correct format for Slack
+      const text = Array.isArray(messagesFromRebecca)
+        ? messagesFromRebecca.join('\n')
+        : messagesFromRebecca;
+
+      console.log('Messages to Slack:', text);
+
+      // Send the message to Slack
+      try {
+        await slackApp.client.chat.postMessage({
+          token: process.env.SLACK_BOT_TOKEN,
+          channel: process.env.REBECCA_SUPPORT_1,
+          text: text,
+        });
+
+        // Acknowledge message sent
+        ws.send(JSON.stringify({ status: 'Message sent to Slack' }));
+      } catch (error) {
+        console.error('Error sending message to Slack:', error);
+        ws.send(JSON.stringify({ error: 'Error sending message to Slack' }));
+      }
+    }
   });
+
+  ws.on('close', () => {
+    console.log('Client disconnected');
+  });
+});
+
+// Start the server on the primary port
+server.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
