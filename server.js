@@ -332,34 +332,9 @@ const server = http
             break;
 
             case "live-support-session":
-              //isLiveSupportMode = true;
-              try {
-                const { messagesFromRebecca } = body;
-            
-                // Ensure messagesFromRebecca is in the correct format for Slack
-                const text = Array.isArray(messagesFromRebecca)
-                  ? messagesFromRebecca.join('\n')
-                  : messagesFromRebecca;
-            
-                // Log the message to be sent to Slack
-                console.log('Messages to Slack:', text);
-            
-                // Send the message to Slack
-                await slackApp.client.chat.postMessage({
-                  token: process.env.SLACK_BOT_TOKEN,
-                  channel: process.env.REBECCA_SUPPORT_1,
-                  text: text,
-                });
-            
-                // Respond with success
-                res.end(JSON.stringify({ status: "Message sent" }));
-              } catch (error) {
-                console.error('Error sending message to Slack:', error);
-            
-                // Respond with error
-                res.statusCode = 500;
-                res.end(JSON.stringify({ error: "Error sending message" }));
-              }
+              await handleLiveSupportSession(body, res);
+              break;
+              
               break;
 
           default:
@@ -422,6 +397,50 @@ wss.on('connection', (ws) => {
     console.log('Client disconnected');
   });
 });
+
+// Function to handle the live support session
+async function handleLiveSupportSession(body, res) {
+  // Check for existing WebSocket clients
+  if (!wss.clients || wss.clients.size === 0) {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'No WebSocket connection available' }));
+  } else {
+    // Create or use a Slack channel for live support
+    try {
+      const channelName = `support-session-${Date.now()}`; // Unique channel name
+      const result = await slackApp.client.conversations.create({
+        token: process.env.SLACK_BOT_TOKEN,
+        name: channelName,
+        is_private: true, // Private channel for support
+      });
+
+      const channelId = result.channel.id; // Get the created channel ID
+
+      // Send initial message to the Slack channel
+      await slackApp.client.chat.postMessage({
+        token: process.env.SLACK_BOT_TOKEN,
+        channel: process.env.SLACK_CHANNEL,
+        text: 'A new live support session has started.',
+      });
+
+      // Notify WebSocket clients
+      wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+          client.send(JSON.stringify({ status: 'Connected to live support session', channelId }));
+        }
+      });
+
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ status: 'Live support session started', channelId }));
+
+    } catch (error) {
+      console.error('Error creating Slack channel:', error);
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Error creating Slack channel' }));
+    }
+  }
+}
+
 
 // Start the server on the primary port
 server.listen(port, () => {
