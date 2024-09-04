@@ -335,7 +335,7 @@ const server = http
               await handleLiveSupportSession(body, res);
               break;
               
-              break;
+            
 
           default:
             res.end(JSON.stringify({ error: 'Invalid request' }));
