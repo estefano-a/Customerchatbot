@@ -213,8 +213,9 @@ const server = http.createServer(async function (req, res) {
             try {
               // const latestMessage = await getLatestMessage(body.name);
               const text = latestMessage
-                ? ${feedbackText}\nLatest response from Rebecca: ${latestMessage}
+                ? `${feedbackText}\nLatest response from Rebecca: ${latestMessage}`
                 : feedbackText;
+
 
               await slackApp.client.chat.postMessage({
                 token: process.env.SLACK_BOT_TOKEN,
