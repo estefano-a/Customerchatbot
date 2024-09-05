@@ -355,7 +355,7 @@ const server = http.createServer(async function (req, res) {
               .toArray();
             messagesResponse.forEach(function (x) {
               if (x.sender == 'customerRep' || x.sender == 'chat-bot') {
-                sessionMessages.push(from247|${x.messageSent});
+                sessionMessages.push(from247|`${x.messageSent}`);
               } else {
                 sessionMessages.push(x.messageSent);
               }
