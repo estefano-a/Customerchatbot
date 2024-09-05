@@ -14,6 +14,11 @@ const slackApp = new App({
 
 var unreadMessages = [];
 
+global.connectedClients = []; // Initialize as an empty array
+global.waitingSockets = []; // Initialize as an empty array
+global.channelOccupied = [false, false, false, false, false]; // Assuming 5 channels
+
+
 // MongoDB constants
 const uri = process.env.MONGOD_CONNECT_URI;
 const client = new MongoClient(uri);
