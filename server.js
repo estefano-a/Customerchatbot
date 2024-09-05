@@ -140,7 +140,15 @@ async function getLatestMessage(name) {
 
 // WebSocket handling logic
 function handleLiveSupportSession(ws) {
-  console.log('WebSocket connection established');
+  ws.on('message', function (message) {
+  console.log('Message Received:', message);
+
+  // Convert the message buffer to a string
+  const messageStr = message.toString();
+
+  // Now split the string
+  let [channelId, ...msgs] = messageStr.split(':');
+  let msg = msgs.join('');
 
   const slackChannels = [
     process.env.REBECCA_SUPPORT_1,
