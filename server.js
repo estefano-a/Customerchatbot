@@ -12,6 +12,8 @@ const slackApp = new App({
   token: process.env.SLACK_BOT_TOKEN,
 });
 
+var unreadMessages = [];
+
 // MongoDB constants
 const uri = process.env.MONGOD_CONNECT_URI;
 const client = new MongoClient(uri);
@@ -63,6 +65,20 @@ function currentTime() {
   return new Date().toString();
 }
 
+// async function obtainSession(name) {
+//   const result = await client
+//     .db(chatDatabase)
+//     .collection(namesAndEmailsCollection)
+//     .findOne({
+//       username: name,
+//     });
+//   if (!result) {
+//     console.error("No user found with the username:", name);
+//     return null; // or handle the absence of the user appropriately
+//   }
+//   return parseInt(result.sessionNumber);
+// }
+
 function updateStatus(name, status) {
   client
     .db(chatDatabase)
@@ -77,16 +93,32 @@ async function addNameAndEmail(name, email) {
   client.db(chatDatabase).collection(namesAndEmailsCollection).insertOne({
     username: name,
     userEmail: email,
+    // sessionNumber: 1,
+    // sessionStatus: 'default',
   });
 }
 
 async function addMessage(name, message, recipient) {
-  client.db(chatDatabase).collection(messagesCollection).insertOne({
-    sender: name,
-    reciever: recipient,
-    time: currentTime(),
-    messageSent: message,
-  });
+  if (name == 'customerRep' || name == 'chat-bot') {
+    // const session = await obtainSession(recipient);
+    client.db(chatDatabase).collection(messagesCollection).insertOne({
+      sender: name,
+      reciever: recipient,
+      time: currentTime(),
+      //session: session,
+      messageSent: message,
+    });
+  } else {
+    // const session = await obtainSession(name);
+    client.db(chatDatabase).collection(messagesCollection).insertOne({
+      sender: name,
+      reciever: recipient,
+      time: currentTime(),
+      //session: session,
+      messageSent: message,
+    });
+  }
+  unreadMessages.push([name, message, recipient]);
 }
 
 async function getLatestMessage(name) {
