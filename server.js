@@ -179,7 +179,8 @@ function handleLiveSupportSession(ws) {
     console.error('WebSocket error:', error);
   });
 
-  ws.send('Connection established successfully');
+  ws.send(JSON.stringify({ message: 'Connection established successfully' }));
+
 }
 
 const server = http.createServer(async function (req, res) {
