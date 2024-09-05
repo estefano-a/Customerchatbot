@@ -211,9 +211,38 @@ function handleLiveSupportSession(ws) {
     console.error('WebSocket error:', error);
   });
 
-  ws.send(JSON.stringify({ message: 'Connection established successfully' }));
+  // ws.send(JSON.stringify({ message: 'Connection established successfully' }));
+  // Notify Slack about the new WebSocket connection
+  const slackChannelId = process.env.SLACK_CHANNEL;
+  const connectionMessage = "A new WebSocket connection has been established for live support.";
+  send_to_slack_api(slackChannelId, connectionMessage);
 
 }
+
+function initializeWebSocketServer() {
+  if (!global.wss) {
+    global.wss = new WebSocket.Server({ noServer: true });
+
+    server.on('upgrade', function upgrade(request, socket, head) {
+      if (request.headers['upgrade'] !== 'websocket') {
+        socket.destroy();
+        return;
+      }
+
+      global.wss.handleUpgrade(request, socket, head, function done(ws) {
+        global.wss.emit('connection', ws, request);
+        handleLiveSupportSession(ws);
+      });
+    });
+
+    console.log('WebSocket server initialized for live support session.');
+  } else {
+    console.log('WebSocket server is already initialized.');
+  }
+}
+
+
+
 
 const server = http.createServer(async function (req, res) {
   if (req.method === 'POST') {
@@ -395,7 +424,8 @@ const server = http.createServer(async function (req, res) {
             res.end(JSON.stringify(sessionMessages));
             break;
           case 'live-support-session':
-            // This case won't need `res.end(...)` because the communication will move to WebSocket.
+            initializeWebSocketServer();
+            res.end(JSON.stringify({ status: 'WebSocket server initialized' }));
             break;
           default:
             res.end(JSON.stringify({ error: 'Invalid request' }));
@@ -417,19 +447,6 @@ const server = http.createServer(async function (req, res) {
   }
 });
 
-global.wss = new WebSocket.Server({ noServer: true });
-
-server.on('upgrade', function upgrade(request, socket, head) {
-  if (request.headers['upgrade'] !== 'websocket') {
-    socket.destroy();
-    return;
-  }
-
-  global.wss.handleUpgrade(request, socket, head, function done(ws) {
-    global.wss.emit('connection', ws, request);
-    handleLiveSupportSession(ws);
-  });
-});
 
 // Helper function definitions
 function isConnected(ws) {
