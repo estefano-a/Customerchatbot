@@ -157,12 +157,7 @@ function handleLiveSupportSession(ws) {
     process.env.REBECCA_SUPPORT_4,
     process.env.REBECCA_SUPPORT_5,
   ];
-
-  ws.on('message', function (message) {
-    console.log('Message Received:', message);
-    let [channelId, ...msgs] = message.split(':');
-    let msg = msgs.join('');
-
+    
     if (!slackChannels.includes(channelId) && channelId !== process.env.SLACK_CHANNEL) {
       if (isConnected(ws)) {
         let channelIndex = findChannelIndex(ws);
@@ -400,7 +395,7 @@ const server = http.createServer(async function (req, res) {
               .toArray();
             messagesResponse.forEach(function (x) {
               if (x.sender == 'customerRep' || x.sender == 'chat-bot') {
-                sessionMessages.push(from247|`${x.messageSent}`);
+                sessionMessages.push(`from247|${x.messageSent}`);
               } else {
                 sessionMessages.push(x.messageSent);
               }
