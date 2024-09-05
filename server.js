@@ -200,7 +200,167 @@ const server = http.createServer(async function (req, res) {
         });
 
         switch (body.request) {
-          // Your existing HTTP request handlers...
+          case 'send-message':
+            const { type } = body;
+            const { latestMessage } = body;
+            let feedbackText;
+            if (type === 'like') {
+              feedbackText = "Our user gave a 👍 on Rebecca's performance.";
+            } else if (type === 'dislike') {
+              feedbackText = "Our user gave a 👎 on Rebecca's performance.";
+            }
+
+            try {
+              // const latestMessage = await getLatestMessage(body.name);
+              const text = latestMessage
+                ? ${feedbackText}\nLatest response from Rebecca: ${latestMessage}
+                : feedbackText;
+
+              await slackApp.client.chat.postMessage({
+                token: process.env.SLACK_BOT_TOKEN,
+                channel: process.env.SLACK_CHANNEL,
+                text: text,
+              });
+              res.end(JSON.stringify({ status: 'Message sent' }));
+            } catch (error) {
+              console.error(error);
+              res.statusCode = 500;
+              res.end(JSON.stringify({ error: 'Error sending message' }));
+            }
+            break;
+          case 'get-latest-message':
+            try {
+              const { name } = body;
+              const latestMessage = await getLatestMessage(name);
+              res.end(JSON.stringify({ latestMessage: latestMessage || '' }));
+            } catch (error) {
+              console.error('Error fetching latest message:', error);
+              res.statusCode = 500;
+              res.end(
+                JSON.stringify({ error: 'Error fetching latest message' })
+              );
+            }
+            break;
+          case 'addUser':
+            await addNameAndEmail(body.name, body.email);
+            res.end(JSON.stringify({ status: 'success' }));
+            break;
+          case 'message':
+            if (
+              body.message ==
+              'A customer service representative has taken your call'
+            ) {
+              updateStatus(body.recipient, 'taken');
+            }
+            await addMessage(body.name, body.message, body.recipient);
+            res.end(JSON.stringify({ status: 'success' }));
+            break;
+          // case "getSession":
+          //   const session = await obtainSession(body.name);
+          //   res.end(session.toString());
+          //   break;
+          case 'callChatBot':
+            await addMessage(body.name, body.message, 'chat-bot');
+            const response = await callChatBot(body.message);
+            await addMessage('chat-bot', response, body.name);
+            res.end(response);
+            break;
+          case 'reloadUsers':
+            let updatedPage = [[], [], []];
+            let liveResponse = await client
+              .db(chatDatabase)
+              .collection(namesAndEmailsCollection)
+              .find({
+                sessionStatus: 'live',
+              })
+              .toArray();
+            liveResponse.forEach(function (x) {
+              updatedPage[0].push([x.username, x.userEmail]);
+              setTimeout(function () {
+                updateStatus(x.username, 'default');
+              }, 990);
+            });
+            let takenResponse = await client
+              .db(chatDatabase)
+              .collection(namesAndEmailsCollection)
+              .find({
+                sessionStatus: 'taken',
+              })
+              .toArray();
+            takenResponse.forEach(function (x) {
+              updatedPage[1].push(x.username);
+              setTimeout(function () {
+                updateStatus(x.username, 'default');
+              }, 4000);
+            });
+            let closedResponse = await client
+              .db(chatDatabase)
+              .collection(namesAndEmailsCollection)
+              .find({
+                sessionStatus: 'closed',
+              })
+              .toArray();
+            closedResponse.forEach(function (x) {
+              updatedPage[2].push(x.username);
+              setTimeout(function () {
+                updateStatus(x.username, 'default');
+              }, 990);
+            });
+            res.end(JSON.stringify(updatedPage));
+            break;
+          case 'reloadMessages':
+            let updatedMessages = [];
+            unreadMessages.forEach((i) => {
+              if (i[0] == body.recipient && i[2] == body.name) {
+                updatedMessages.push(i[1]);
+                unreadMessages.splice(unreadMessages.indexOf(i), 1);
+              }
+            });
+            res.end(JSON.stringify(updatedMessages));
+            break;
+          case 'addUserToLiveChat':
+            updateStatus(body.name, 'live');
+            res.end(JSON.stringify({ status: 'success' }));
+            break;
+          case 'removeUser':
+            await client
+              .db(chatDatabase)
+              .collection(namesAndEmailsCollection)
+              .findOneAndUpdate(
+                {
+                  username: body.name,
+                },
+                {
+                  $inc: { sessionNumber: 1 },
+                  $set: { sessionStatus: 'closed' },
+                }
+              );
+            unreadMessages.forEach((i) => {
+              if (i[0] == body.name || i[2] == body.name) {
+                unreadMessages.splice(unreadMessages.indexOf(i), 1);
+              }
+            });
+            res.end(JSON.stringify({ status: 'success' }));
+            break;
+          case 'getMessagesDuringSession':
+            let sessionMessages = [];
+            const messagesResponse = await client
+              .db(chatDatabase)
+              .collection(messagesCollection)
+              .find({
+                session: parseInt(body.session),
+                $or: [{ sender: body.name }, { reciever: body.name }],
+              })
+              .toArray();
+            messagesResponse.forEach(function (x) {
+              if (x.sender == 'customerRep' || x.sender == 'chat-bot') {
+                sessionMessages.push(from247|${x.messageSent});
+              } else {
+                sessionMessages.push(x.messageSent);
+              }
+            });
+            res.end(JSON.stringify(sessionMessages));
+            break;
           case 'live-support-session':
             // This case won't need `res.end(...)` because the communication will move to WebSocket.
             break;
