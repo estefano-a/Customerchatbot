@@ -240,7 +240,8 @@ function handleLiveSupportSession(ws) {
   });
 
   // Retain existing handlers for 'close' and 'error'
-  ws.on('close', function () {
+  ws.on('close', function (code, reason) {
+    console.log(`WebSocket closed. Code: ${code}, Reason: ${reason}`);
     if (isConnected(ws)) {
       let index = getClientIndex(ws);
       if (index !== -1) {
