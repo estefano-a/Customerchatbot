@@ -152,7 +152,7 @@ function handleLiveSupportSession(ws) {
     process.env.REBECCA_SUPPORT_4,
     process.env.REBECCA_SUPPORT_5,
   ];
-      ws.on('message', function (e) {
+      ws.on('websocketChat', function (e) {
     console.log("===========================Channel Status===========================");
     for (let i = 0; i < global.channelOccupied.length; i++) {
       console.log(String(slackChannels[i]) + ": " + String(global.channelOccupied[i]));
