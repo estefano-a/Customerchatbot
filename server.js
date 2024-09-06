@@ -335,16 +335,16 @@ const server = http.createServer(async function (req, res) {
             await addNameAndEmail(body.name, body.email);
             res.end(JSON.stringify({ status: 'success' }));
             break;
-          case 'message':
-            if (
-              body.message ==
-              'A customer service representative has taken your call'
-            ) {
-              updateStatus(body.recipient, 'taken');
-            }
-            await addMessage(body.name, body.message, body.recipient);
-            res.end(JSON.stringify({ status: 'success' }));
-            break;
+          // case 'message':
+          //   if (
+          //     body.message ==
+          //     'A customer service representative has taken your call'
+          //   ) {
+          //     updateStatus(body.recipient, 'taken');
+          //   }
+          //   await addMessage(body.name, body.message, body.recipient);
+          //   res.end(JSON.stringify({ status: 'success' }));
+          //   break;
           // case "getSession":
           //   const session = await obtainSession(body.name);
           //   res.end(session.toString());
