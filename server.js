@@ -152,14 +152,19 @@ function handleLiveSupportSession(ws) {
     process.env.REBECCA_SUPPORT_4,
     process.env.REBECCA_SUPPORT_5,
   ];
-      ws.on('websocketChat', function (e) {
+      ws.on('message', function (e) {
     console.log("===========================Channel Status===========================");
     for (let i = 0; i < global.channelOccupied.length; i++) {
       console.log(String(slackChannels[i]) + ": " + String(global.channelOccupied[i]));
     }
 
-    const incomingMessage = e.toString();
-    console.log("Message Received: " + incomingMessage);
+    let incomingMessage;
+        try {
+          incomingMessage = JSON.parse(e.toString());
+        } catch (error) {
+          console.error('Failed to parse incoming message:', error);
+          return;
+        }
 
     // Separates message from channelId (if it has one)
     let [channelId, ...msgs] = incomingMessage.split(":");
@@ -209,6 +214,7 @@ function handleLiveSupportSession(ws) {
           channelId = slackChannels[client.channelIndex];
 
           // Send message to Slack
+          console.log('Sending message to Slack:', msg);
           send_to_slack_api(channelId, msg);
 
           // Alert help desk that there is a person waiting to get a response
