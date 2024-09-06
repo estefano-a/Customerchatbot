@@ -6,6 +6,7 @@ const { App } = require('@slack/bolt');
 const WebSocket = require('ws');
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const port = process.env.PORT || 10000;
+const slackPort = process.env.SLACK_BOLT_PORT || 3000;
 
 const slackApp = new App({
   signingSecret: process.env.SLACK_SIGNING_SECRET,
@@ -576,7 +577,7 @@ function send_to_slack_api(channelId, msg) {
 
 // Start the server on the primary port
 (async () => {
-  await slackApp.start(port);
+  await slackApp.start(slackPort);
   console.log('Slack app is running!');
   
 server.listen(port, () => {
