@@ -142,16 +142,17 @@ async function getLatestMessage(name) {
   return result.length > 0 ? result[0].messageSent : null;
 }
 
-// WebSocket handling logic
-function handleLiveSupportSession(ws) {
-
-  const slackChannels = [
+const slackChannels = [
     process.env.REBECCA_SUPPORT_1,
     process.env.REBECCA_SUPPORT_2,
     process.env.REBECCA_SUPPORT_3,
     process.env.REBECCA_SUPPORT_4,
     process.env.REBECCA_SUPPORT_5,
   ];
+
+// WebSocket handling logic
+function handleLiveSupportSession(ws) {
+  
       ws.on('message', function (e) {
     console.log("===========================Channel Status===========================");
     for (let i = 0; i < global.channelOccupied.length; i++) {
@@ -277,6 +278,30 @@ function handleLiveSupportSession(ws) {
 
   ws.send(JSON.stringify({ message: 'Connection established successfully. Please wait for a message from live support.' }));
 }
+// Slack event handling using Slack Bolt
+slackApp.event('message', async ({ event, say }) => {
+  if (event.subtype && event.subtype === 'bot_message') {
+    return; // Ignore messages from bots
+  }
+
+  console.log(`Message received from Slack: ${event.text}`);
+
+  // Send the Slack message to the connected WebSocket client
+  sendToClient(event.channel, event.text);
+});
+
+// Function to send message to WebSocket client
+function sendToClient(channelId, message) {
+  console.log('Connected Users:', global.connectedClients.length);
+  for (let i = 0; i < global.connectedClients.length; i++) {
+    let client = global.connectedClients[i];
+    if (channelId === slackChannels[client.channelIndex]) {
+      client.websocket.send(JSON.stringify({ message }));
+      console.log('Message sent to client:', message);
+    }
+  }
+}
+
 
 const server = http.createServer(async function (req, res) {
   if (req.method === 'POST') {
@@ -482,6 +507,10 @@ const server = http.createServer(async function (req, res) {
 
 global.wss = new WebSocket.Server({ noServer: true });
 
+global.wss.on('connection', function (ws) {
+  handleLiveSupportSession(ws);
+});
+
 server.on('upgrade', function upgrade(request, socket, head) {
   if (request.headers['upgrade'] !== 'websocket') {
     socket.destroy();
@@ -490,7 +519,6 @@ server.on('upgrade', function upgrade(request, socket, head) {
 
   global.wss.handleUpgrade(request, socket, head, function done(ws) {
     global.wss.emit('connection', ws, request);
-    handleLiveSupportSession(ws);
   });
 });
 
@@ -522,6 +550,17 @@ function getClientIndex(ws) {
   return global.connectedClients.findIndex(client => client.websocket === ws);
 }
 
+function disconnectClient(ws) {
+  if (isClientConnected(ws)) {
+    let index = getClientIndex(ws);
+    if (index !== -1) {
+      let channelIndex = findChannelIndex(ws);
+      global.connectedClients.splice(index, 1);
+      global.channelOccupied[channelIndex] = false;
+    }
+  }
+}
+
 function send_to_slack_api(channelId, msg) {
   slackApp.client.chat.postMessage({
     token: process.env.SLACK_BOT_TOKEN,
@@ -536,6 +575,11 @@ function send_to_slack_api(channelId, msg) {
 }
 
 // Start the server on the primary port
+(async () => {
+  await slackApp.start(port);
+  console.log('Slack app is running!');
+  
 server.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
+})();
