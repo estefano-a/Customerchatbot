@@ -323,8 +323,14 @@ const server = http.createServer(async function (req, res) {
           res.end(parsedBody.challenge); // Respond with the challenge token
           return;
         }
+
+        //Fake ack function
+        const ack = () => {
+          res.writeHead(200);
+          res.end();
+        }
          // Process other Slack events using Slack Bolt
-        await slackApp.processEvent({ body: parsedBody, headers: req.headers }, res);
+        await slackApp.processEvent({ body: parsedBody, headers: req.headers, ack }, res);
       } catch (error) {
         console.error('Error processing request:', error);
         res.writeHead(400);
