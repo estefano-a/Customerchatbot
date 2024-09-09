@@ -305,7 +305,31 @@ function sendToClient(channelId, message) {
 
 
 const server = http.createServer(async function (req, res) {
-  if (req.method === 'POST') {
+  if (req.method === 'POST' && req.url === '/slack/events') {
+    let body = '';
+    req.on('data', (chunk) => {
+      body += chunk.toString();
+    });
+    req.on('end', async () => {
+      try {
+        const parsedBody = JSON.parse(body);
+
+         // Handle URL verification request
+        if (parsedBody.type === 'url_verification') {
+          console.log('URL verification request received');
+          res.writeHead(200, { 'Content-Type': 'text/plain' });
+          res.end(parsedBody.challenge); // Respond with the challenge token
+          return;
+        }
+         // Process other Slack events using Slack Bolt
+        await slackApp.processEvent({ body: parsedBody, headers: req.headers }, res);
+      } catch (error) {
+        console.error('Error processing request:', error);
+        res.writeHead(400);
+        res.end('Invalid request');
+      }
+    });
+  } else if (req.method === 'POST') {
     let body = '';
     req.on('data', (chunk) => {
       body += chunk.toString();
