@@ -280,7 +280,9 @@ function handleLiveSupportSession(ws) {
   ws.send(JSON.stringify({ message: 'Connection established successfully. Please wait for a message from live support.' }));
 }
 // Slack event handling using Slack Bolt
-slackApp.event('message', async ({ event, say }) => {
+slackApp.event('message', async ({ event, say, ack }) => {
+  await ack();
+  
   if (event.subtype && event.subtype === 'bot_message') {
     return; // Ignore messages from bots
   }
