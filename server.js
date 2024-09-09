@@ -280,9 +280,7 @@ function handleLiveSupportSession(ws) {
   ws.send(JSON.stringify({ message: 'Connection established successfully. Please wait for a message from live support.' }));
 }
 // Slack event handling using Slack Bolt
-slackApp.event('message', async ({ event, say, ack }) => {
-  await ack();
-  
+slackApp.event('message', async ({ event, say }) => {
   if (event.subtype && event.subtype === 'bot_message') {
     return; // Ignore messages from bots
   }
@@ -323,14 +321,8 @@ const server = http.createServer(async function (req, res) {
           res.end(parsedBody.challenge); // Respond with the challenge token
           return;
         }
-
-        //Fake ack function
-        const ack = () => {
-          res.writeHead(200);
-          res.end();
-        }
          // Process other Slack events using Slack Bolt
-        await slackApp.processEvent({ body: parsedBody, headers: req.headers, ack }, res);
+        await slackApp.processEvent({ body: parsedBody, headers: req.headers }, res);
       } catch (error) {
         console.error('Error processing request:', error);
         res.writeHead(400);
