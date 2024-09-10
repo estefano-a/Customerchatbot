@@ -15,6 +15,22 @@ const slackApp = new App({
   appToken: process.env.SLACK_APP_TOKEN
 });
 
+// Add the Slack WebClient initialization here
+const { WebClient } = require('@slack/web-api');
+const slackToken = process.env.SLACK_BOT_TOKEN;
+const slackClient = new WebClient(slackToken);
+
+// Function to fetch the channel name using the Slack API
+async function getChannelName(channelId) {
+  try {
+    const response = await slackClient.conversations.info({ channel: channelId });
+    return response.channel.name;
+  } catch (error) {
+    console.error('Error fetching channel name:', error);
+    return null;
+  }
+}
+
 var unreadMessages = [];
 
 global.connectedClients = []; // Initialize as an empty array
@@ -223,11 +239,15 @@ function handleLiveSupportSession(ws) {
                     console.log('Sending message to Slack:', msg);
                     send_to_slack_api(channelId, msg);
 
-                    // Alert help desk that there is a person waiting to get a response
-                    let notificationMessage = `<!channel> We have a new chat in room: <%23${channelId}|>`;
-                    send_to_slack_api(process.env.SLACK_CHANNEL, notificationMessage);
-                }
-            }
+                    // Fetch the channel name and send notification
+                    const channelName = await getChannelName(channelId); // Use the function here
+                    if (channelName) {
+                      let notificationMessage = `<!channel> We have a new chat in room: ${channelName}`;
+                      send_to_slack_api(process.env.SLACK_CHANNEL, notificationMessage);
+                    } else {
+                      console.error('Failed to send notification: Channel name could not be fetched.');
+                    }
+                  }
         } else {
             // Message was sent from Slack
             console.log("Message came from Slack");
