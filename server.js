@@ -93,19 +93,19 @@ function currentTime() {
   return new Date().toString();
 }
 
-// async function obtainSession(name) {
-//   const result = await client
-//     .db(chatDatabase)
-//     .collection(namesAndEmailsCollection)
-//     .findOne({
-//       username: name,
-//     });
-//   if (!result) {
-//     console.error("No user found with the username:", name);
-//     return null; // or handle the absence of the user appropriately
-//   }
-//   return parseInt(result.sessionNumber);
-// }
+async function obtainSession(name) {
+  const result = await client
+    .db(chatDatabase)
+    .collection(namesAndEmailsCollection)
+    .findOne({
+      username: name,
+    });
+  if (!result) {
+    console.error("No user found with the username:", name);
+    return null; // or handle the absence of the user appropriately
+  }
+  return parseInt(result.sessionNumber);
+}
 
 function updateStatus(name, status) {
   client
@@ -121,19 +121,19 @@ async function addNameAndEmail(name, email) {
   client.db(chatDatabase).collection(namesAndEmailsCollection).insertOne({
     username: name,
     userEmail: email,
-    // sessionNumber: 1,
-    // sessionStatus: 'default',
+    sessionNumber: 1,
+    sessionStatus: 'default',
   });
 }
 
 async function addMessage(name, message, recipient) {
   if (name == 'customerRep' || name == 'chat-bot') {
-    // const session = await obtainSession(recipient);
+    const session = await obtainSession(recipient);
     client.db(chatDatabase).collection(messagesCollection).insertOne({
       sender: name,
       reciever: recipient,
       time: currentTime(),
-      //session: session,
+      session: session,
       messageSent: message,
     });
   } else {
@@ -142,7 +142,7 @@ async function addMessage(name, message, recipient) {
       sender: name,
       reciever: recipient,
       time: currentTime(),
-      //session: session,
+      session: session,
       messageSent: message,
     });
   }
@@ -414,20 +414,20 @@ const server = http.createServer(async function (req, res) {
             await addNameAndEmail(body.name, body.email);
             res.end(JSON.stringify({ status: 'success' }));
             break;
-          // case 'message':
-          //   if (
-          //     body.message ==
-          //     'A customer service representative has taken your call'
-          //   ) {
-          //     updateStatus(body.recipient, 'taken');
-          //   }
-          //   await addMessage(body.name, body.message, body.recipient);
-          //   res.end(JSON.stringify({ status: 'success' }));
-          //   break;
-          // case "getSession":
-          //   const session = await obtainSession(body.name);
-          //   res.end(session.toString());
-          //   break;
+          case 'message':
+            if (
+              body.message ==
+              'A customer service representative has taken your call'
+            ) {
+              updateStatus(body.recipient, 'taken');
+            }
+            await addMessage(body.name, body.message, body.recipient);
+            res.end(JSON.stringify({ status: 'success' }));
+            break;
+          case "getSession":
+            const session = await obtainSession(body.name);
+            res.end(session.toString());
+            break;
           case 'callChatBot':
             await addMessage(body.name, body.message, 'chat-bot');
             const response = await callChatBot(body.message);
