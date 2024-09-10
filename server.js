@@ -172,7 +172,7 @@ const slackChannels = [
 // WebSocket handling logic
 function handleLiveSupportSession(ws) {
   
-      ws.on('message', function (e) {
+      ws.on('message', async function (e) {
     console.log("===========================Channel Status===========================");
     for (let i = 0; i < global.channelOccupied.length; i++) {
         console.log(String(slackChannels[i]) + ": " + String(global.channelOccupied[i]));
@@ -240,7 +240,7 @@ function handleLiveSupportSession(ws) {
                     send_to_slack_api(channelId, msg);
 
                     // Fetch the channel name and send notification
-                    const channelName = await getChannelName(channelId); // Use the function here
+                    const channelName = await getChannelName(channelId);
                     if (channelName) {
                       let notificationMessage = `<!channel> We have a new chat in room: ${channelName}`;
                       send_to_slack_api(process.env.SLACK_CHANNEL, notificationMessage);
@@ -248,6 +248,7 @@ function handleLiveSupportSession(ws) {
                       console.error('Failed to send notification: Channel name could not be fetched.');
                     }
                   }
+            }
         } else {
             // Message was sent from Slack
             console.log("Message came from Slack");
@@ -268,7 +269,7 @@ function handleLiveSupportSession(ws) {
     }
 });
 
-  // Retain existing handlers for 'close' and 'error'
+  
   ws.on('close', function (code, reason) {
     console.log(`WebSocket closed. Code: ${code}, Reason: ${reason}`);
     if (isConnected(ws)) {
@@ -598,7 +599,7 @@ function getClientIndex(ws) {
 }
 
 function disconnectClient(ws) {
-  if (isClientConnected(ws)) {
+  if (isConnected(ws)) {
     let index = getClientIndex(ws);
     if (index !== -1) {
       let channelIndex = findChannelIndex(ws);
