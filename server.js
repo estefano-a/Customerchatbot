@@ -172,7 +172,7 @@ const slackChannels = [
 // WebSocket handling logic
 function handleLiveSupportSession(ws) {
   
-      ws.on('message', async function (e) {
+  ws.on('message', async function (e) {
     console.log("===========================Channel Status===========================");
     for (let i = 0; i < global.channelOccupied.length; i++) {
         console.log(String(slackChannels[i]) + ": " + String(global.channelOccupied[i]));
@@ -180,16 +180,16 @@ function handleLiveSupportSession(ws) {
 
     let incomingMessage;
     try {
-        incomingMessage = e.toString(); // Convert the incoming message to a string
+        incomingMessage = JSON.parse(e);
     } catch (error) {
         console.error('Failed to convert incoming message:', error);
         return;
     }
 
     // Check if the incoming message is in the expected format
-    if (incomingMessage.includes(":")) {
+    if (incomingMessage.message && incomingMessage.message.includes(":")) {
         // Separates message from channelId (if it has one)
-        let [channelId, ...msgs] = incomingMessage.split(":");
+        let [channelId, ...msgs] = incomingMessage.message.split(":");
         console.log("Channel ID: " + String(channelId));
 
         // Locate the channel in the channels array
