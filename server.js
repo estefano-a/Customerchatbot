@@ -272,6 +272,12 @@ function handleLiveSupportSession(ws) {
   
   ws.on('close', function (code, reason) {
     console.log(`WebSocket closed. Code: ${code}, Reason: ${reason}`);
+    
+    if (code === 1006) { // 1006 indicates an abnormal closure (possible server disconnect)
+      console.log("Server explicit disconnect detected. Retrying connection...");
+      retryConnection(ws, 0); // Call a retry function to re-establish the connection
+    }
+    
     if (isConnected(ws)) {
       let index = getClientIndex(ws);
       if (index !== -1) {
@@ -302,6 +308,26 @@ function handleLiveSupportSession(ws) {
 
   ws.send(JSON.stringify({ message: 'Connection established successfully. Please wait for a message from live support.' }));
 }
+
+function retryConnection(ws, retries = 0) {
+  const maxRetries = 5; // Limit retries to 5 attempts
+  const retryDelay = Math.min(3000 * (retries + 1), 15000); // Exponential backoff with a max of 15 seconds
+
+  if (retries >= maxRetries) {
+    console.log("Max retry attempts reached. Closing WebSocket.");
+    ws.close();
+    return;
+  }
+
+  setTimeout(() => {
+    console.log(`Retrying WebSocket connection... Attempt ${retries + 1}`);
+    attemptToConnect(ws);
+  }, retryDelay);
+
+  retries++;
+}
+
+
 // Slack event handling using Slack Bolt
 slackApp.event('message', async ({ event, say }) => {
   if (event.subtype && event.subtype === 'bot_message') {
