@@ -8,55 +8,58 @@
 require('dotenv').config();
 const { OpenAI } = require("openai");
 const fs = require('fs');
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+//const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const apiKey = "sk-proj-dfk6i678ZIm0q6eyBb20T3BlbkFJZHtUYNzHG3m5YWcSGOW1";
+const assistantId = "asst_sAJQ5E0BDbAywut8hIh923SR"; 
+const openai = new OpenAI({ apiKey: apiKey });
 
-async function main() {
-    try {
-        const run = await openai.beta.threads.createAndRun({
-            assistant_id: process.env.OPENAI_ASSISTANT_ID,
-            thread: {
-              messages: [
-                { role: "user", content: "Can you tell me about the company 24/7 Teach?" },
-              ],
-            },
-          });
+// async function main() {
+//     try {
+//         const run = await openai.beta.threads.createAndRun({
+//             assistant_id: process.env.OPENAI_ASSISTANT_ID,
+//             thread: {
+//               messages: [
+//                 { role: "user", content: "Can you tell me about the company 24/7 Teach?" },
+//               ],
+//             },
+//           });
 
-        console.log("run status: ", run.status);
+//         console.log("run status: ", run.status);
 
-        while(
-            await openai.beta.threads.runs.retrieve(
-                run.thread_id,
-                run.id
-              ).status != 'failed'
-        ){
-            const result = await openai.beta.threads.runs.retrieve(
-                run.thread_id,
-                run.id
-            );
-            console.log("Status of run is:" , result.status);
+//         while(
+//             await openai.beta.threads.runs.retrieve(
+//                 run.thread_id,
+//                 run.id
+//               ).status != 'failed'
+//         ){
+//             const result = await openai.beta.threads.runs.retrieve(
+//                 run.thread_id,
+//                 run.id
+//             );
+//             console.log("Status of run is:" , result.status);
 
-            if(result.status == 'completed'){
-                const threadMessages = await openai.beta.threads.messages.list(
-                    run.thread_id
-                  );
+//             if(result.status == 'completed'){
+//                 const threadMessages = await openai.beta.threads.messages.list(
+//                     run.thread_id
+//                   );
 
-                console.log(threadMessages.data[0].content[0].text.value)
-                return threadMessages.data[0].content[0].text.value;
-            }
-        }
-    } catch (error) {
-        console.error('An error occurred:', error);
-        return "";
-    }
-}
+//                 console.log(threadMessages.data[0].content[0].text.value)
+//                 return threadMessages.data[0].content[0].text.value;
+//             }
+//         }
+//     } catch (error) {
+//         console.error('An error occurred:', error);
+//         return "";
+//     }
+// }
 
-// //reading files
+//reading files
 const schemaFile = "chatgptSchema.txt";
 const systemSchema = fs.readFileSync(schemaFile, "utf-8");
 
 async function editInstructions(){
   const myUpdatedAssistant = await openai.beta.assistants.update(
-    process.env.OPENAI_ASSISTANT_ID,
+    assistantId,
     {
       instructions: systemSchema
     }
