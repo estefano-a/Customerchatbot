@@ -9,8 +9,8 @@ require('dotenv').config();
 const { OpenAI } = require("openai");
 const fs = require('fs');
 //const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-const apiKey = "ENTER API KEY HERE";
-const assistantId = "ENTER ID HERE"; 
+const apiKey = "sk-proj-dfk6i678ZIm0q6eyBb20T3BlbkFJZHtUYNzHG3m5YWcSGOW1";
+const assistantId = "asst_sAJQ5E0BDbAywut8hIh923SR"; 
 const openai = new OpenAI({ apiKey: apiKey });
 
 // async function main() {
